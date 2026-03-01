@@ -1,0 +1,436 @@
+/* ══════════════════════════════════════════════
+   Resplandor — Loading Screen Styles
+   Paleta: #0F0F0F · #FACC15 · #1E40AF · #E5E7EB
+   ══════════════════════════════════════════════ */
+
+/* ── Screen base ── */
+#loading-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: #0F0F0F;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    cursor: none;
+}
+
+/* Page entrance fade-in after loading */
+body:not(.page-entered) main,
+body:not(.page-entered) header,
+body:not(.page-entered) footer {
+    opacity: 0;
+}
+
+body.page-entered main,
+body.page-entered header,
+body.page-entered footer {
+    opacity: 1;
+    transition: opacity 0.8s ease 0.1s;
+}
+
+/* ── Phase 5: Exit ── */
+.ls-screen--exit {
+    animation: ls-fade-out 0.9s cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+
+.ls-logo--exit {
+    animation: ls-logo-shrink 0.5s cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+
+@keyframes ls-fade-out {
+    0% {
+        opacity: 1;
+    }
+
+    60% {
+        opacity: 0.6;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+@keyframes ls-logo-shrink {
+    0% {
+        transform: scale(1);
+    }
+
+    100% {
+        transform: scale(0.9);
+        opacity: 0;
+    }
+}
+
+/* ── Noise texture overlay ── */
+#ls-noise {
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.06'/%3E%3C/svg%3E");
+    background-size: 180px;
+    opacity: 0.04;
+    pointer-events: none;
+    animation: ls-noise-drift 8s linear infinite alternate;
+}
+
+@keyframes ls-noise-drift {
+    0% {
+        transform: translate(0, 0) scale(1.02);
+    }
+
+    100% {
+        transform: translate(-15px, -10px) scale(1);
+    }
+}
+
+/* ── Radial center glow ── */
+#ls-glow {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 50%, rgba(250, 204, 21, 0.07) 0%, rgba(30, 64, 175, 0.06) 40%, transparent 65%);
+    pointer-events: none;
+    animation: ls-glow-pulse 3.5s ease-in-out infinite;
+}
+
+@keyframes ls-glow-pulse {
+
+    0%,
+    100% {
+        opacity: 0.5;
+    }
+
+    50% {
+        opacity: 1;
+    }
+}
+
+/* ── Particles ── */
+#ls-particles {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.ls-particle {
+    position: absolute;
+    border-radius: 50%;
+    animation: ls-float linear infinite;
+}
+
+.ls-particle.yellow {
+    background: #FACC15;
+    box-shadow: 0 0 6px rgba(250, 204, 21, 0.8);
+}
+
+.ls-particle.blue {
+    background: #1E40AF;
+    box-shadow: 0 0 6px rgba(30, 64, 175, 0.9);
+}
+
+@keyframes ls-float {
+    0% {
+        transform: translateY(0px) translateX(0px);
+        opacity: 0;
+    }
+
+    10% {
+        opacity: 1;
+    }
+
+    90% {
+        opacity: 0.5;
+    }
+
+    100% {
+        transform: translateY(-100px) translateX(20px);
+        opacity: 0;
+    }
+}
+
+/* ── Logo group ── */
+#ls-logo-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 28px;
+    position: relative;
+    z-index: 10;
+}
+
+/* ── Phase 2: Logo Image ── */
+#ls-logo-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#ls-logo-img {
+    width: 140px;
+    height: 140px;
+    object-fit: contain;
+    opacity: 0;
+    transform: scale(0.82);
+    filter: drop-shadow(0 0 0px rgba(250, 204, 21, 0)) brightness(1.05);
+    transition:
+        opacity 0.7s cubic-bezier(0.34, 1.2, 0.64, 1),
+        transform 0.8s cubic-bezier(0.34, 1.2, 0.64, 1),
+        filter 1s ease;
+}
+
+#ls-logo-img.ls-logo--visible {
+    opacity: 1;
+    transform: scale(1);
+    filter:
+        drop-shadow(0 0 18px rgba(250, 204, 21, 0.75)) drop-shadow(0 0 36px rgba(250, 204, 21, 0.25)) brightness(1.08);
+    animation: ls-logo-glow 3s ease-in-out infinite 0.8s;
+}
+
+@keyframes ls-logo-glow {
+
+    0%,
+    100% {
+        filter:
+            drop-shadow(0 0 12px rgba(250, 204, 21, 0.65)) drop-shadow(0 0 28px rgba(250, 204, 21, 0.2)) brightness(1.05);
+    }
+
+    50% {
+        filter:
+            drop-shadow(0 0 24px rgba(250, 204, 21, 1)) drop-shadow(0 0 48px rgba(250, 204, 21, 0.4)) drop-shadow(0 0 8px rgba(30, 64, 175, 0.3)) brightness(1.12);
+    }
+}
+
+/* ── Logo glow ring ── */
+#ls-logo-ring {
+    position: absolute;
+    inset: -20px;
+    border-radius: 50%;
+    border: 1px solid rgba(250, 204, 21, 0);
+    transition: border-color 1s ease, box-shadow 1s ease;
+    pointer-events: none;
+}
+
+#ls-logo-ring.ls-ring--active {
+    border-color: rgba(250, 204, 21, 0.15);
+    box-shadow:
+        0 0 30px rgba(250, 204, 21, 0.15),
+        inset 0 0 20px rgba(250, 204, 21, 0.05);
+    animation: ls-ring-pulse 2.5s ease-in-out infinite;
+}
+
+@keyframes ls-ring-pulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 0.7;
+    }
+
+    50% {
+        transform: scale(1.04);
+        opacity: 1;
+    }
+}
+
+/* ── Phase 3: Brand text row ── */
+#ls-brand-row {
+    display: flex;
+    align-items: baseline;
+    gap: 0;
+    position: relative;
+}
+
+/* Text reveal: mask sliding left → right */
+#ls-brand-text {
+    position: relative;
+    font-family: 'Outfit', 'Inter', system-ui, sans-serif;
+    font-size: clamp(2.4rem, 6vw, 3.8rem);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: #E5E7EB;
+    text-shadow: 0 0 30px rgba(229, 231, 235, 0.1);
+    overflow: hidden;
+    white-space: nowrap;
+    /* Start completely masked */
+    clip-path: inset(0 100% 0 0);
+    opacity: 1;
+    transition: clip-path 0s;
+}
+
+#ls-brand-text.ls-text--active {
+    clip-path: inset(0 0% 0 0);
+    transition: clip-path 1.5s cubic-bezier(0.25, 0.1, 0.25, 1);
+    animation: ls-text-glow-settle 0.6s ease 1.5s forwards;
+}
+
+@keyframes ls-text-glow-settle {
+    to {
+        text-shadow:
+            0 0 12px rgba(229, 231, 235, 0.2),
+            0 0 35px rgba(229, 231, 235, 0.06);
+    }
+}
+
+/* Light sweep effect on text */
+#ls-brand-text::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 55%;
+    height: 100%;
+    background: linear-gradient(90deg,
+            transparent 0%,
+            rgba(250, 204, 21, 0.35) 45%,
+            rgba(255, 240, 160, 0.65) 50%,
+            rgba(250, 204, 21, 0.35) 55%,
+            transparent 100%);
+    pointer-events: none;
+    filter: blur(4px);
+}
+
+#ls-brand-text.ls-text--active::after {
+    animation: ls-light-sweep 1.5s cubic-bezier(0.33, 0.1, 0.66, 1) forwards;
+}
+
+@keyframes ls-light-sweep {
+    0% {
+        left: -60%;
+    }
+
+    100% {
+        left: 110%;
+    }
+}
+
+/* Spark container */
+#ls-text-sparks {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: visible;
+}
+
+.ls-text-spark {
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: #FACC15;
+    box-shadow: 0 0 8px #FACC15, 0 0 16px rgba(250, 204, 21, 0.5);
+    animation: ls-spark-pop 0.5s ease forwards;
+}
+
+@keyframes ls-spark-pop {
+    0% {
+        transform: scale(0) translateY(0);
+        opacity: 1;
+    }
+
+    50% {
+        transform: scale(1.5) translateY(-14px);
+        opacity: 0.9;
+    }
+
+    100% {
+        transform: scale(0.2) translateY(-28px);
+        opacity: 0;
+    }
+}
+
+/* ── Phase 4: Dot ── */
+#ls-dot {
+    font-family: 'Outfit', 'Inter', system-ui, sans-serif;
+    font-size: clamp(2.4rem, 6vw, 3.8rem);
+    font-weight: 700;
+    color: #FACC15;
+    text-shadow: 0 0 20px rgba(250, 204, 21, 0.9), 0 0 40px rgba(250, 204, 21, 0.4);
+    opacity: 0;
+    transform: scale(0.4);
+    transition: opacity 0.35s ease, transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+    align-self: baseline;
+    line-height: 1;
+}
+
+#ls-dot.ls-dot--visible {
+    opacity: 1;
+    transform: scale(1);
+    animation: ls-dot-blink 1.2s ease-in-out infinite 0.4s;
+}
+
+@keyframes ls-dot-blink {
+
+    0%,
+    100% {
+        text-shadow: 0 0 16px rgba(250, 204, 21, 0.9), 0 0 32px rgba(250, 204, 21, 0.4);
+        opacity: 1;
+    }
+
+    50% {
+        text-shadow: 0 0 28px rgba(250, 204, 21, 1), 0 0 56px rgba(250, 204, 21, 0.65);
+        opacity: 0.7;
+    }
+}
+
+/* ── Phase 4b: Tagline ── */
+#ls-tagline {
+    font-family: 'Outfit', 'Inter', system-ui, sans-serif;
+    font-size: clamp(0.55rem, 1.4vw, 0.72rem);
+    font-weight: 500;
+    letter-spacing: 0.38em;
+    color: rgba(30, 64, 175, 0.85);
+    text-transform: uppercase;
+    text-shadow: 0 0 14px rgba(30, 64, 175, 0.7);
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+#ls-tagline.ls-tagline--visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* ── Skip button ── */
+#ls-skip {
+    position: absolute;
+    bottom: 28px;
+    right: 28px;
+    font-family: 'Outfit', system-ui, sans-serif;
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(229, 231, 235, 0.25);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px 12px;
+    transition: color 0.2s;
+    animation: ls-fade-in-delayed 1s ease 2.2s both;
+}
+
+#ls-skip:hover {
+    color: rgba(229, 231, 235, 0.7);
+}
+
+@keyframes ls-fade-in-delayed {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/* ── Responsive ── */
+@media (max-width: 480px) {
+    #ls-logo-img {
+        width: 100px;
+        height: 100px;
+    }
+}

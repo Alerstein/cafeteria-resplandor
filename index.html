@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Resplandor | Tech Startup Hub & Café</title>
+
+    <!-- Font: Outfit (Minimalista Japonesa / Geométrica) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+</head>
+
+<body
+    class="selection:bg-[var(--color-cafeteria-accent)] selection:text-[var(--color-cafeteria-dark)] bg-[var(--color-cafeteria-light)] text-[var(--color-cafeteria-dark)] font-sans antialiased">
+
+    <!-- ═══════════════════════════════════════════
+         LOADING SCREEN — Resplandor Entry Experience
+         ═══════════════════════════════════════════ -->
+    <div id="loading-screen" role="progressbar" aria-label="Cargando Resplandor">
+        <div id="ls-noise"></div>
+        <div id="ls-glow"></div>
+        <div id="ls-particles"></div>
+
+        <div id="ls-logo-group">
+            <!-- Phase 2: Real Logo PNG with golden glow -->
+            <div id="ls-logo-wrapper">
+                <div id="ls-logo-ring"></div>
+                <img id="ls-logo-img" src="/Resplandor_Logo.png" alt="Resplandor" />
+            </div>
+
+            <!-- Phase 3+4: Brand name + dot -->
+            <div id="ls-brand-row">
+                <div style="position:relative;">
+                    <span id="ls-brand-text">Resplandor</span>
+                    <div id="ls-text-sparks"></div>
+                </div>
+                <span id="ls-dot">.</span>
+            </div>
+
+            <!-- Phase 4b: Tagline -->
+            <p id="ls-tagline">Coffee Lab &times; Tech</p>
+        </div>
+
+        <button id="ls-skip" onclick="document.getElementById('loading-screen').dispatchEvent(new Event('skip'))">
+            Saltar — ESC
+        </button>
+    </div>
+    <!-- /LOADING SCREEN -->
+
+    <!-- Custom Cursor -->
+    <div id="cursor-dot"></div>
+    <div id="cursor-trail"></div>
+
+    <!-- Navigation Header (Sticky) -->
+    <header id="header" class="fixed w-full top-0 z-50 transition-all duration-300 py-4 bg-transparent">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center">
+
+                <!-- Logo -->
+                <div class="flex-shrink-0 flex items-center">
+                    <img src="/Resplandor_Logo.png" alt="Resplandor Logo"
+                        class="h-10 md:h-12 w-auto object-contain drop-shadow-[0_0_10px_rgba(250,204,21,0.35)]">
+                </div>
+
+                <!-- Desktop Navigation -->
+                <nav class="hidden md:flex space-x-8 items-center gap-3" aria-label="Navegación principal">
+                    <a href="#about"
+                        class="text-sm font-light text-gray-400 hover:text-white transition-colors">Nosotros</a>
+                    <a href="#proceso"
+                        class="text-sm font-light text-gray-400 hover:text-white transition-colors">Proceso</a>
+                    <a href="#menu" class="text-sm font-light text-gray-400 hover:text-white transition-colors">Menú</a>
+                    <a href="#workspace"
+                        class="text-sm font-light text-gray-400 hover:text-white transition-colors">Workspace</a>
+                    <a href="#testimonials"
+                        class="text-sm font-light text-gray-400 hover:text-white transition-colors">Comunidad</a>
+                    <!-- Code Mode Toggle -->
+                    <button id="code-mode-toggle" title="Activar Modo Code" aria-pressed="false">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                        </svg>
+                    </button>
+                    <a href="#booking"
+                        class="bg-transparent border border-white/20 hover:border-[var(--color-cafeteria-accent)]/60 text-white px-5 py-2 rounded-sm text-sm font-light transition-colors btn-primary">Reserva
+                        tu pase</a>
+                </nav>
+
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden flex items-center">
+                    <button id="mobile-menu-btn" type="button"
+                        class="text-gray-700 hover:text-[var(--color-cafeteria-brand)] focus:outline-none p-2"
+                        aria-expanded="false">
+                        <span class="sr-only">Abrir menú principal</span>
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Menu Slide-over -->
+    <div id="mobile-menu"
+        class="fixed inset-y-0 right-0 z-50 w-full bg-white sm:max-w-sm shadow-2xl transform translate-x-full transition-transform duration-300 ease-in-out">
+        <div class="p-8">
+            <div class="flex items-center justify-between mb-12">
+                <span class="font-light text-xl text-gray-900 tracking-tight">Resplandor.</span>
+                <button id="close-menu-btn" type="button" class="text-gray-400 hover:text-gray-900 p-2">
+                    <span class="sr-only">Cerrar menú</span>
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <div class="flex flex-col space-y-6">
+                <a href="#about" class="text-lg font-medium text-gray-900 border-b border-gray-100 pb-4">Nosotros</a>
+                <a href="#menu" class="text-lg font-medium text-gray-900 border-b border-gray-100 pb-4">Menú</a>
+                <a href="#workspace"
+                    class="text-lg font-medium text-gray-900 border-b border-gray-100 pb-4">Workspace</a>
+                <a href="#testimonials"
+                    class="text-lg font-medium text-gray-900 border-b border-gray-100 pb-4">Comunidad</a>
+                <a href="#booking"
+                    class="bg-[var(--color-cafeteria-brand)] text-center text-white px-5 py-3 rounded-xl text-base font-medium mt-4">Reserva
+                    tu spot</a>
+            </div>
+        </div>
+    </div>
+
+    <main>
+        <!-- Hero Section -->
+        <section id="hero"
+            class="relative min-h-[100vh] flex items-center justify-center pt-24 pb-16 overflow-hidden bg-[var(--color-cafeteria-dark)]">
+
+            <!-- Parallax Background Layer -->
+            <div id="hero-bg-layer" class="absolute inset-0 z-0" style="transform: scale(1.08);">
+                <img src="/hero_bg.png" alt="" class="w-full h-full object-cover opacity-20"
+                    style="mix-blend-mode: luminosity;">
+                <!-- Overlay -->
+                <div
+                    class="absolute inset-0 bg-gradient-to-b from-[var(--color-cafeteria-dark)]/60 via-transparent to-[var(--color-cafeteria-dark)]">
+                </div>
+            </div>
+
+            <!-- Technical Dot Pattern Background -->
+            <div class="absolute inset-0 z-0 opacity-15"
+                style="background-image: radial-gradient(var(--color-cafeteria-brand) 1px, transparent 1px); background-size: 32px 32px;">
+            </div>
+
+            <!-- Radial Gradient Glow -->
+            <div
+                class="absolute inset-0 z-0 bg-gradient-to-tr from-[var(--color-cafeteria-dark)] via-[var(--color-cafeteria-dark)] to-[var(--color-cafeteria-brand)]/15 pointer-events-none">
+            </div>
+
+            <div
+                class="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center flex flex-col items-center reveal-hidden">
+                <!-- Badge interactivo -->
+                <div
+                    class="inline-flex items-center gap-3 px-5 py-2 rounded-full border border-[var(--color-cafeteria-brand)]/40 bg-[var(--color-cafeteria-light)]/60 backdrop-blur-md mb-10 shadow-glow-blue cursor-default">
+                    <span
+                        class="w-2 h-2 rounded-full bg-[var(--color-cafeteria-accent)] animate-pulse shadow-[0_0_8px_var(--color-cafeteria-accent)]"></span>
+                    <span class="text-xs font-bold text-gray-200 tracking-[0.2em] uppercase">Tech X Coffee Lab</span>
+                </div>
+
+                <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight text-white mb-6 leading-tight">
+                    El motor de tu<br />
+                    <span
+                        class="text-transparent bg-clip-text bg-gradient-to-r from-[var(--color-cafeteria-accent)] to-[#fef08a] mt-2 block filter drop-shadow-[0_0_15px_rgba(250,204,21,0.5)]">productividad.</span>
+                </h1>
+
+                <p class="mt-6 max-w-3xl mx-auto text-lg md:text-xl text-gray-300 mb-12 leading-relaxed font-medium">
+                    Donde la dosis exacta de cafeína y la conexión <span
+                        class="text-[var(--color-cafeteria-brand)] font-bold text-glow-blue">1 Gbps</span> convergen en
+                    tu próximo gran proyecto.
+                </p>
+
+                <div class="flex flex-col sm:flex-row gap-6 justify-center w-full sm:w-auto">
+                    <a href="#booking"
+                        class="px-10 py-4 bg-[var(--color-cafeteria-brand)] text-white font-bold rounded-xl hover-glow-blue transition-all duration-300 ease-out border border-transparent btn-primary">
+                        Reservar estación
+                    </a>
+                    <a href="#workspace"
+                        class="px-10 py-4 bg-[var(--color-cafeteria-light)] border border-[var(--color-cafeteria-brand)]/30 text-white font-bold rounded-xl hover:bg-[var(--color-cafeteria-brand)]/10 transition-all duration-300 ease-out backdrop-blur-md btn-primary">
+                        Explorar espacios
+                    </a>
+                </div>
+            </div>
+
+            <!-- Scroll Indicator -->
+            <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce reveal-hidden"
+                style="transition-delay: 400ms;">
+                <a href="#about" class="text-[var(--color-cafeteria-brand)] hover:text-white transition-colors">
+                    <svg class="w-8 h-8 filter drop-shadow-[0_0_5px_rgba(59,130,246,0.8)]" fill="none"
+                        stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+                    </svg>
+                </a>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section id="about" class="py-32 bg-[var(--color-cafeteria-dark)] relative overflow-hidden">
+            <!-- Glow background sutil -->
+            <div
+                class="absolute top-0 right-0 w-[500px] h-[500px] bg-[var(--color-cafeteria-brand)]/5 rounded-full blur-[120px] pointer-events-none">
+            </div>
+
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+
+                    <div class="space-y-10 reveal-hidden">
+                        <div>
+                            <span
+                                class="text-[10px] uppercase tracking-[0.2em] text-[var(--color-cafeteria-accent)] font-bold mb-4 block">La
+                                Experiencia</span>
+                            <h2 class="text-4xl md:text-5xl font-extrabold text-white leading-tight mb-6">
+                                Más que un café, <br />
+                                un <span
+                                    class="text-transparent bg-clip-text bg-gradient-to-r from-[var(--color-cafeteria-brand)] to-blue-400">ecosistema
+                                    de enfoque.</span>
+                            </h2>
+                            <p class="text-gray-400 leading-relaxed font-medium text-lg">
+                                Diseñamos cada ángulo de nuestro Hub para fomentar la productividad profunda. Sin
+                                distracciones. Solo herramientas de alto rendimiento, un entorno estético calmado y
+                                tostado de calidad superior.
+                            </p>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-6 pt-8 border-t border-[var(--color-cafeteria-brand)]/20 reveal-hidden"
+                            style="transition-delay: 200ms;">
+                            <div
+                                class="p-5 bg-[var(--color-cafeteria-light)] rounded-xl border border-[var(--color-cafeteria-brand)]/20 hover:border-[var(--color-cafeteria-brand)]/60 transition-colors shadow-lg hover-glow-blue cursor-default group">
+                                <h4
+                                    class="text-3xl font-extrabold text-white mb-2 flex items-center gap-2 group-hover:text-glow-blue transition-all">
+                                    <span
+                                        class="w-2 h-2 rounded-full bg-[var(--color-cafeteria-brand)] animate-pulse"></span>
+                                    1 Gbps
+                                </h4>
+                                <p class="text-xs text-gray-400 font-bold uppercase tracking-wider">Conexión Simétrica
+                                </p>
+                            </div>
+                            <div
+                                class="p-5 bg-[var(--color-cafeteria-light)] rounded-xl border border-[var(--color-cafeteria-brand)]/20 hover:border-[var(--color-cafeteria-accent)]/60 transition-colors shadow-lg hover-glow-blue cursor-default group">
+                                <h4
+                                    class="text-3xl font-extrabold text-white mb-2 flex items-center gap-2 transition-all">
+                                    <span class="w-2 h-2 rounded-full bg-[var(--color-cafeteria-accent)]"></span>
+                                    Lúmenes
+                                </h4>
+                                <p class="text-xs text-gray-400 font-bold uppercase tracking-wider">Luz Orgánica Activa
+                                </p>
+                            </div>
+                            <div
+                                class="p-5 bg-[var(--color-cafeteria-light)] rounded-xl border border-green-500/20 hover:border-green-500/60 transition-colors shadow-lg cursor-default group hover:scale-[1.02]">
+                                <h4
+                                    class="text-3xl font-extrabold text-white mb-2 flex items-center gap-2 transition-all">
+                                    <span class="w-2 h-2 rounded-full bg-green-400"></span>
+                                    100%
+                                </h4>
+                                <p class="text-xs text-gray-400 font-bold uppercase tracking-wider">Origen Único</p>
+                            </div>
+                            <div
+                                class="p-5 bg-[var(--color-cafeteria-light)] rounded-xl border border-purple-500/20 hover:border-purple-500/60 transition-colors shadow-lg cursor-default group hover:scale-[1.02]">
+                                <h4
+                                    class="text-3xl font-extrabold text-white mb-2 flex items-center gap-2 transition-all">
+                                    <span class="w-2 h-2 rounded-full bg-purple-400"></span>
+                                    Silence
+                                </h4>
+                                <p class="text-xs text-gray-400 font-bold uppercase tracking-wider">Zonas No-Talk</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="relative reveal-hidden hidden md:block" style="transition-delay: 400ms;">
+                        <!-- Decors -->
+                        <div
+                            class="absolute -top-4 -left-4 w-24 h-24 border-t-2 border-l-2 border-[var(--color-cafeteria-brand)]/50 z-0">
+                        </div>
+                        <div
+                            class="absolute -bottom-4 -right-4 w-24 h-24 border-b-2 border-r-2 border-[var(--color-cafeteria-accent)]/50 z-0">
+                        </div>
+
+                        <div
+                            class="relative rounded-2xl overflow-hidden shadow-glow-blue border border-[var(--color-cafeteria-accent)]/20 z-10 bg-[var(--color-cafeteria-light)]">
+                            <img src="/about_img.png" alt="Barista en coffee lab tech"
+                                class="w-full h-auto object-cover opacity-90 transition-transform duration-700 hover:scale-[1.03]">
+                            <div
+                                class="absolute inset-0 bg-gradient-to-t from-[var(--color-cafeteria-dark)]/40 to-transparent pointer-events-none">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══════════════ NUESTRO PROCESO ═══════════════ -->
+        <section id="proceso"
+            class="py-32 bg-[var(--color-cafeteria-dark)] relative border-b border-[var(--color-cafeteria-brand)]/10 overflow-hidden">
+            <!-- Subtle glow -->
+            <div
+                class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-[var(--color-cafeteria-brand)]/5 rounded-full blur-[120px] pointer-events-none">
+            </div>
+
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                <div class="text-center mb-20 reveal-hidden">
+                    <span
+                        class="text-[10px] uppercase tracking-[0.25em] text-[var(--color-cafeteria-accent)] font-bold mb-4 block">Del
+                        Origen a la Taza</span>
+                    <h2 class="text-4xl md:text-5xl font-extrabold text-white">Nuestro Proceso</h2>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-12 relative">
+
+                    <!-- Step 1: Selección -->
+                    <div class="process-step reveal-hidden" style="transition-delay: 100ms;">
+                        <div class="relative">
+                            <div class="process-icon">
+                                <svg class="w-7 h-7 text-[var(--color-cafeteria-accent)]" fill="none"
+                                    stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                </svg>
+                            </div>
+                            <div class="hidden md:block process-connector"></div>
+                        </div>
+                        <span class="process-number">01</span>
+                        <h3 class="text-xl font-bold text-white text-center">Selección</h3>
+                        <p class="text-sm text-gray-400 text-center leading-relaxed font-medium max-w-[220px]">Granos de
+                            origen único seleccionados por nuestros especialistas en fincas de altitud superior.</p>
+                    </div>
+
+                    <!-- Step 2: Tostado -->
+                    <div class="process-step reveal-hidden" style="transition-delay: 300ms;">
+                        <div class="relative">
+                            <div class="process-icon">
+                                <svg class="w-7 h-7 text-[var(--color-cafeteria-accent)]" fill="none"
+                                    stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                        d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                        d="M9.879 16.121A3 3 0 1012.015 11L11 14H9c0 .768.293 1.536.879 2.121z" />
+                                </svg>
+                            </div>
+                            <div class="hidden md:block process-connector"></div>
+                        </div>
+                        <span class="process-number">02</span>
+                        <h3 class="text-xl font-bold text-white text-center">Tostado</h3>
+                        <p class="text-sm text-gray-400 text-center leading-relaxed font-medium max-w-[220px]">Perfiles
+                            de tostado calibrados con precisión milimétrica para revelar el carácter exacto del grano.
+                        </p>
+                    </div>
+
+                    <!-- Step 3: Extracción -->
+                    <div class="process-step reveal-hidden" style="transition-delay: 500ms;">
+                        <div class="process-icon">
+                            <svg class="w-7 h-7 text-[var(--color-cafeteria-accent)]" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                    d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.026 1.026.24 2.414-1.136 2.414H4.354c-1.376 0-2.162-1.388-1.136-2.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                            </svg>
+                        </div>
+                        <span class="process-number">03</span>
+                        <h3 class="text-xl font-bold text-white text-center">Extracción</h3>
+                        <p class="text-sm text-gray-400 text-center leading-relaxed font-medium max-w-[220px]">Cada
+                            método aplicado como protocolo científico: presión, temperatura y tiempo, perfectamente
+                            medidos.</p>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- Menu Section -->
+        <section id="menu"
+            class="py-32 bg-[var(--color-cafeteria-light)] relative border-y border-[var(--color-cafeteria-brand)]/10">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-20 reveal-hidden">
+                    <h2
+                        class="text-xs font-bold text-[var(--color-cafeteria-brand)] tracking-widest uppercase mb-4 text-glow-blue">
+                        Combustible Puro</h2>
+                    <h3 class="text-4xl md:text-5xl font-extrabold text-white">Ingeniería en cada taza</h3>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+
+                    <!-- Menu Item 1 -->
+                    <div class="group bg-[var(--color-cafeteria-dark)] border border-[var(--color-cafeteria-brand)]/20 rounded-2xl overflow-hidden hover-glow-blue transition-all duration-300 ease-out reveal-hidden"
+                        style="transition-delay: 100ms;">
+                        <div class="h-64 overflow-hidden relative">
+                            <div
+                                class="absolute inset-0 bg-gradient-to-t from-[var(--color-cafeteria-dark)] to-transparent z-10">
+                            </div>
+                            <img src="https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?q=80&w=800&auto=format&fit=crop"
+                                alt="V60 Pour Over"
+                                class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-80 group-hover:opacity-100 mix-blend-luminosity group-hover:mix-blend-normal">
+                            <!-- Badge Price -->
+                            <div
+                                class="absolute top-4 right-4 bg-[var(--color-cafeteria-brand)] text-white text-xs font-bold px-3 py-1 rounded-full z-20 shadow-lg shadow-[var(--color-cafeteria-brand)]/40">
+                                $4.50</div>
+                        </div>
+                        <div class="p-8 relative z-20 -mt-10">
+                            <h4
+                                class="text-2xl font-bold text-white mb-2 group-hover:text-[var(--color-cafeteria-brand)] transition-colors">
+                                V60 Pour Over</h4>
+                            <p class="text-sm text-gray-400 mb-6 font-medium leading-relaxed">
+                                Extracción limpia y brillante. Nuestro blend etíope revela notas complejas de jazmín y
+                                bergamota con una claridad excepcional.
+                            </p>
+                            <button
+                                class="w-full py-3 bg-transparent border border-[var(--color-cafeteria-brand)]/50 text-white rounded-xl hover:bg-[var(--color-cafeteria-brand)] hover:border-[var(--color-cafeteria-brand)] font-bold transition-all duration-300 shadow-md">
+                                Protocolo Initiate
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Menu Item 2 -->
+                    <!-- Menu Item 2 -->
+                    <div class="group bg-[var(--color-cafeteria-dark)] border border-[var(--color-cafeteria-brand)]/20 rounded-2xl overflow-hidden hover-glow-blue transition-all duration-300 ease-out reveal-hidden"
+                        style="transition-delay: 300ms;">
+                        <div class="h-64 overflow-hidden relative">
+                            <div
+                                class="absolute inset-0 bg-gradient-to-t from-[var(--color-cafeteria-dark)] to-transparent z-10">
+                            </div>
+                            <img src="https://images.unsplash.com/photo-1461023058943-07fcbe16d735?q=80&w=800&auto=format&fit=crop"
+                                alt="Flat White"
+                                class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-80 group-hover:opacity-100 mix-blend-luminosity group-hover:mix-blend-normal">
+                            <div
+                                class="absolute top-4 right-4 bg-[var(--color-cafeteria-brand)] text-white text-xs font-bold px-3 py-1 rounded-full z-20 shadow-lg shadow-[var(--color-cafeteria-brand)]/40">
+                                $4.00</div>
+                        </div>
+                        <div class="p-8 relative z-20 -mt-10">
+                            <h4
+                                class="text-2xl font-bold text-white mb-2 group-hover:text-[var(--color-cafeteria-brand)] transition-colors">
+                                Flat White Orgánico</h4>
+                            <p class="text-sm text-gray-400 mb-6 font-medium leading-relaxed">
+                                Doble ristretto sobre leche texturizada al vapor. Equilibrio perfecto entre la fuerza
+                                del espresso y la textura sedosa.
+                            </p>
+                            <button
+                                class="w-full py-3 bg-transparent border border-[var(--color-cafeteria-brand)]/50 text-white rounded-xl hover:bg-[var(--color-cafeteria-brand)] hover:border-[var(--color-cafeteria-brand)] font-bold transition-all duration-300 shadow-md">
+                                Protocolo Initiate
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Menu Item 3 -->
+                    <div class="group bg-[var(--color-cafeteria-dark)] border border-[var(--color-cafeteria-brand)]/20 rounded-2xl overflow-hidden hover-glow-blue transition-all duration-300 ease-out reveal-hidden"
+                        style="transition-delay: 500ms;">
+                        <div class="h-64 overflow-hidden relative">
+                            <div
+                                class="absolute inset-0 bg-gradient-to-t from-[var(--color-cafeteria-dark)] to-transparent z-10">
+                            </div>
+                            <img src="https://images.unsplash.com/photo-1517701604599-bb29b565090c?q=80&w=800&auto=format&fit=crop"
+                                alt="Cold Brew Nitro"
+                                class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-80 group-hover:opacity-100 mix-blend-luminosity group-hover:mix-blend-normal">
+                            <div
+                                class="absolute top-4 right-4 bg-[var(--color-cafeteria-brand)] text-white text-xs font-bold px-3 py-1 rounded-full z-20 shadow-lg shadow-[var(--color-cafeteria-brand)]/40">
+                                $5.50</div>
+                            <div
+                                class="absolute top-4 left-4 bg-[var(--color-cafeteria-accent)] text-[var(--color-cafeteria-dark)] text-xs font-bold px-2 py-1 flex items-center gap-1 rounded shadow-lg z-20">
+                                <span class="w-1.5 h-1.5 rounded-full bg-black animate-pulse"></span>
+                                Top Pick
+                            </div>
+                        </div>
+                        <div class="p-8 relative z-20 -mt-10">
+                            <h4
+                                class="text-2xl font-bold text-white mb-2 group-hover:text-[var(--color-cafeteria-brand)] transition-colors">
+                                Nitro Brew</h4>
+                            <p class="text-sm text-gray-400 mb-6 font-medium leading-relaxed">
+                                Infusión en frío durante 24hs, inyectada con nitrógeno. Textura cremosa como una stout,
+                                pero cargada de energía.
+                            </p>
+                            <button
+                                class="w-full py-3 bg-[var(--color-cafeteria-brand)] text-white rounded-xl hover-glow-blue font-bold transition-all duration-300 shadow-lg shadow-[var(--color-cafeteria-brand)]/30 border border-transparent">
+                                Protocolo Initiate
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- Workspace Tech Section -->
+        <section id="workspace"
+            class="py-32 bg-[var(--color-cafeteria-dark)] text-white relative border-b border-[var(--color-cafeteria-brand)]/10">
+            <!-- Glow background -->
+            <div
+                class="absolute top-1/2 left-0 w-[40%] h-[60%] bg-[var(--color-cafeteria-brand)]/10 rounded-full blur-[150px] pointer-events-none -translate-y-1/2 z-0">
+            </div>
+
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                <div class="flex flex-col lg:flex-row-reverse gap-20 items-center">
+
+                    <div class="lg:w-1/2 space-y-8 reveal-hidden" style="transition-delay: 200ms;">
+                        <h2 class="text-4xl md:text-5xl font-extrabold leading-tight">
+                            Arquitectura <br /><span
+                                class="text-transparent bg-clip-text bg-gradient-to-r from-[var(--color-cafeteria-accent)] to-[#fef08a] filter drop-shadow-[0_0_15px_rgba(250,204,21,0.5)]">para
+                                la concentración</span>
+                        </h2>
+                        <p class="text-gray-300 text-lg leading-relaxed font-medium">
+                            Hardware de nivel corporativo en booths de cristal acústico. Luz calibrada RGB para
+                            optimizar ritmos circadianos durante sesiones extremas de código.
+                        </p>
+
+                        <ul class="space-y-6 pt-4">
+                            <li class="flex items-start gap-4">
+                                <div
+                                    class="flex-shrink-0 w-10 h-10 rounded-xl bg-[var(--color-cafeteria-brand)]/20 border border-[var(--color-cafeteria-brand)]/40 flex items-center justify-center text-[var(--color-cafeteria-brand)] shadow-glow-blue">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-white">Monitores Ultrawide disponibles</h4>
+                                    <p class="text-sm text-gray-400">Puestos "Docking" con USB-C (hasta 90W).</p>
+                                </div>
+                            </li>
+                            <li class="flex items-start gap-4">
+                                <div
+                                    class="flex-shrink-0 w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-[var(--color-cafeteria-accent)]">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-white">Salas para calls insonorizadas</h4>
+                                    <p class="text-sm text-gray-400">Cabinas privadas reservables por hora.</p>
+                                </div>
+                            </li>
+                            <li class="flex items-start gap-4">
+                                <div
+                                    class="flex-shrink-0 w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-[var(--color-cafeteria-accent)]">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-white">Enchufes universales en cada mesa</h4>
+                                    <p class="text-sm text-gray-400">Sin extensiones molestas, energía al alcance.</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="lg:w-1/2 relative">
+                        <div
+                            class="relative rounded-xl overflow-hidden border border-[var(--color-cafeteria-brand)]/20 shadow-glow-blue">
+                            <img src="/workspace_img.png" alt="Workspace premium minimalista tech"
+                                class="w-full h-auto object-cover opacity-85 transition-transform duration-700 hover:scale-[1.03]">
+                            <div
+                                class="absolute inset-0 bg-gradient-to-t from-[var(--color-cafeteria-dark)]/50 to-transparent pointer-events-none">
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- Testimonials -->
+        <section id="testimonials"
+            class="py-32 bg-[var(--color-cafeteria-dark)] border-t border-[var(--color-cafeteria-brand)]/10">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-20 reveal-hidden">
+                    <h2
+                        class="text-xs font-bold text-[var(--color-cafeteria-brand)] tracking-widest uppercase mb-4 text-glow-blue">
+                        Mentes Conectadas</h2>
+                    <h3 class="text-4xl md:text-5xl font-extrabold text-white">Nuestra Comunidad</h3>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <!-- Testimonial 1 -->
+                    <div class="p-10 bg-[var(--color-cafeteria-light)] border border-[var(--color-cafeteria-brand)]/20 rounded-2xl hover-glow-blue transition-all duration-300 reveal-hidden"
+                        style="transition-delay: 100ms;">
+                        <div class="flex items-center gap-4 mb-6">
+                            <img src="https://i.pravatar.cc/150?img=32" alt="Avatar Elena"
+                                class="w-14 h-14 rounded-full object-cover border-2 border-[var(--color-cafeteria-brand)]/50 p-0.5">
+                            <div>
+                                <h4 class="font-bold text-white text-base">Elena S.</h4>
+                                <p
+                                    class="text-xs text-[var(--color-cafeteria-brand)] font-bold tracking-wide uppercase">
+                                    Software Architect</p>
+                            </div>
+                        </div>
+                        <p class="text-gray-300 font-medium leading-relaxed">
+                            "Las líneas claras y el silencio respetuoso hacen que mis sesiones de código aquí duren
+                            horas sin agotarme. El WiFi nunca defrauda."
+                        </p>
+                    </div>
+
+                    <!-- Testimonial 2 -->
+                    <div class="p-10 bg-[var(--color-cafeteria-light)] border border-[var(--color-cafeteria-brand)]/20 rounded-2xl hover-glow-blue transition-all duration-300 reveal-hidden"
+                        style="transition-delay: 300ms;">
+                        <div class="flex items-center gap-4 mb-6">
+                            <img src="https://i.pravatar.cc/150?img=11" alt="Avatar David"
+                                class="w-14 h-14 rounded-full object-cover border-2 border-[var(--color-cafeteria-accent)]/50 p-0.5">
+                            <div>
+                                <h4 class="font-bold text-white text-base">David M.</h4>
+                                <p
+                                    class="text-xs text-[var(--color-cafeteria-accent)] font-bold tracking-wide uppercase">
+                                    AI Researcher</p>
+                            </div>
+                        </div>
+                        <p class="text-gray-300 font-medium leading-relaxed">
+                            "El contraste entre tecnología de punta y la energía de su entorno te obliga a ser
+                            productivo. El Cold Brew Nitro es puro rocket fuel."
+                        </p>
+                    </div>
+
+                    <!-- Testimonial 3 -->
+                    <div class="p-10 bg-[var(--color-cafeteria-light)] border border-[var(--color-cafeteria-brand)]/20 rounded-2xl hover-glow-blue transition-all duration-300 reveal-hidden"
+                        style="transition-delay: 500ms;">
+                        <div class="flex items-center gap-4 mb-6">
+                            <img src="https://i.pravatar.cc/150?img=47" alt="Avatar Sara"
+                                class="w-14 h-14 rounded-full object-cover border-2 border-green-500/50 p-0.5">
+                            <div>
+                                <h4 class="font-bold text-white text-base">Sara K.</h4>
+                                <p class="text-xs text-green-400 font-bold tracking-wide uppercase">Cybersecurity Writer
+                                </p>
+                            </div>
+                        </div>
+                        <p class="text-gray-300 font-medium leading-relaxed">
+                            "El café de origen único es excepcional, pero me quedo por la tranquilidad brutal de sus
+                            cabinas insonorizadas."
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Final CTA -->
+        <section id="booking" class="py-32 bg-[var(--color-cafeteria-light)] relative overflow-hidden">
+            <!-- Blobs y gradientes -->
+            <div
+                class="absolute inset-0 z-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-5">
+            </div>
+            <div
+                class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[var(--color-cafeteria-brand)]/10 rounded-full blur-[100px] pointer-events-none">
+            </div>
+
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10 reveal-hidden">
+                <h2 class="text-4xl md:text-6xl font-extrabold text-white mb-6 tracking-tight">El acceso está concedido.
+                </h2>
+                <p class="text-gray-300 text-lg mb-10 font-medium max-w-xl mx-auto">
+                    Únete a la red. Obtén tu primer acceso gratuito con un espresso de cortesía como protocolo de
+                    inicio.
+                </p>
+
+                <form
+                    class="flex flex-col sm:flex-row gap-0 max-w-xl mx-auto border border-[var(--color-cafeteria-brand)]/50 rounded-xl overflow-hidden shadow-glow-blue bg-[var(--color-cafeteria-dark)]/50 backdrop-blur-md">
+                    <input type="email" placeholder="Ingresa tu email terminal..."
+                        class="flex-grow px-6 py-5 bg-transparent focus:outline-none text-white font-medium focus:bg-[var(--color-cafeteria-brand)]/10 transition-colors"
+                        required>
+                    <button type="submit"
+                        class="px-10 py-5 bg-[var(--color-cafeteria-brand)] text-white font-bold hover:bg-blue-600 transition-colors whitespace-nowrap shadow-[inset_0_-3px_0_rgba(0,0,0,0.2)] active:translate-y-px active:shadow-none">
+                        Protocolo Initiate
+                    </button>
+                </form>
+                <p class="text-sm font-bold text-[var(--color-cafeteria-brand)] mt-6 text-glow-blue animate-pulse">
+                    SYSTEM_READY // 1er Día de Coworking 100% Free</p>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer
+        class="bg-[var(--color-cafeteria-dark)] text-white pt-24 pb-12 border-t border-[var(--color-cafeteria-brand)]/20 relative overflow-hidden">
+        <!-- Glows -->
+        <div
+            class="absolute bottom-0 left-1/2 -translate-x-1/2 w-full h-32 bg-[var(--color-cafeteria-brand)]/5 blur-3xl pointer-events-none">
+        </div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-16 mb-16 reveal-hidden">
+
+                <div class="col-span-1 md:col-span-1">
+                    <div class="flex items-center gap-3 mb-6">
+                        <img src="/Resplandor_Logo.png" alt="Resplandor Logo"
+                            class="h-12 w-auto object-contain drop-shadow-[0_0_15px_rgba(250,204,21,0.3)]">
+                    </div>
+                    <p class="text-gray-400 text-sm leading-relaxed font-medium">
+                        El primer tech startup hub de la ciudad. Espacios diseñados para el enfoque profundo y el
+                        networking de alto rendimiento.
+                    </p>
+                </div>
+
+                <div>
+                    <h5
+                        class="font-bold text-white mb-6 text-sm uppercase tracking-wider text-[var(--color-cafeteria-brand)]">
+                        Navegación</h5>
+                    <ul class="space-y-4">
+                        <li><a href="#about"
+                                class="text-gray-400 hover:text-[var(--color-cafeteria-accent)] text-sm transition-colors font-medium hover:pl-2 duration-300">Filosofía</a>
+                        </li>
+                        <li><a href="#menu"
+                                class="text-gray-400 hover:text-[var(--color-cafeteria-accent)] text-sm transition-colors font-medium hover:pl-2 duration-300">Laboratorio</a>
+                        </li>
+                        <li><a href="#workspace"
+                                class="text-gray-400 hover:text-[var(--color-cafeteria-accent)] text-sm transition-colors font-medium hover:pl-2 duration-300">Espacios</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h5
+                        class="font-bold text-white mb-6 text-sm uppercase tracking-wider text-[var(--color-cafeteria-brand)]">
+                        Soporte</h5>
+                    <ul class="space-y-4">
+                        <li><a href="#"
+                                class="text-gray-400 hover:text-[var(--color-cafeteria-accent)] text-sm transition-colors font-medium hover:pl-2 duration-300">FAQ
+                                Terminal</a>
+                        </li>
+                        <li><a href="#"
+                                class="text-gray-400 hover:text-[var(--color-cafeteria-accent)] text-sm transition-colors font-medium hover:pl-2 duration-300">System
+                                Logs</a>
+                        </li>
+                        <li><a href="#"
+                                class="text-gray-400 hover:text-[var(--color-cafeteria-accent)] text-sm transition-colors font-medium hover:pl-2 duration-300">Protocolo
+                                de Contacto</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h5
+                        class="font-bold text-white mb-6 text-sm uppercase tracking-wider text-[var(--color-cafeteria-brand)]">
+                        Operación</h5>
+                    <ul class="space-y-4 text-sm text-gray-400 font-medium">
+                        <li class="flex items-center gap-2">
+                            <div class="w-1.5 h-1.5 rounded-full bg-green-400"></div> Lu - Vi: 7:00 am - 9:00 pm
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <div class="w-1.5 h-1.5 rounded-full bg-orange-400"></div> Sábados: 8:00 am - 4:00 pm
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <div
+                                class="w-1.5 h-1.5 rounded-full bg-[var(--color-cafeteria-brand)] animate-pulse shadow-[0_0_5px_rgba(59,130,246,0.8)]">
+                            </div> <span class="text-white font-bold">Root Access: 24/7 Keycard</span>
+                        </li>
+                    </ul>
+                </div>
+
+            </div>
+
+            <div class="pt-8 border-t border-[var(--color-cafeteria-brand)]/20 flex flex-col md:flex-row justify-between items-center gap-4 reveal-hidden"
+                style="transition-delay: 200ms;">
+                <p class="text-gray-500 text-xs font-medium uppercase tracking-widest">&copy; 2026 Resplandor //
+                    Sistema_v3.2</p>
+                <div class="flex gap-6">
+                    <a href="#"
+                        class="text-gray-500 hover:text-[var(--color-cafeteria-brand)] transition-colors hover-glow-blue rounded-full p-1">
+                        <span class="sr-only">Instagram</span>
+                        <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+                            <path fill-rule="evenodd"
+                                d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.067.06 1.407.06 4.123v.08c0 2.643-.012 2.987-.06 4.043-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.067.048-1.407.06-4.123.06h-.08c-2.643 0-2.987-.012-4.043-.06-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 01-1.772-1.153 4.902 4.902 0 01-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.047-1.024-.06-1.379-.06-3.808v-.63c0-2.43.013-2.784.06-3.808.049-1.064.218-1.791.465-2.427a4.902 4.902 0 011.153-1.772A4.902 4.902 0 015.45 2.525c.636-.247 1.363-.416 2.427-.465C8.901 2.013 9.256 2 11.685 2h.63zm-.081 1.802h-.468c-2.456 0-2.784.011-3.807.058-.975.045-1.504.207-1.857.344-.467.182-.8.398-1.15.748-.35.35-.566.683-.748 1.15-.137.353-.3.882-.344 1.857-.047 1.023-.058 1.351-.058 3.807v.468c0 2.456.011 2.784.058 3.807.045.975.207 1.504.344 1.857.182.466.399.8.748 1.15.35.35.683.566 1.15.748.353.137.882.3 1.857.344 1.054.048 1.37.058 4.041.058h.08c2.597 0 2.917-.01 3.96-.058.976-.045 1.505-.207 1.858-.344.466-.182.8-.398 1.15-.748.35-.35.566-.683.748-1.15.137-.353.3-.882.344-1.857.048-1.055.058-1.37.058-4.041v-.08c0-2.597-.01-2.917-.058-3.96-.045-.976-.207-1.505-.344-1.858a3.097 3.097 0 00-.748-1.15 3.098 3.098 0 00-1.15-.748c-.353-.137-.882-.3-1.857-.344-1.023-.047-1.351-.058-3.807-.058zM12 6.865a5.135 5.135 0 110 10.27 5.135 5.135 0 010-10.27zm0 1.802a3.333 3.333 0 100 6.666 3.333 3.333 0 000-6.666zm5.338-3.205a1.2 1.2 0 110 2.4 1.2 1.2 0 010-2.4z"
+                                clip-rule="evenodd" />
+                        </svg>
+                    </a>
+                    <a href="#"
+                        class="text-gray-500 hover:text-[var(--color-cafeteria-brand)] transition-colors hover-glow-blue rounded-full p-1">
+                        <span class="sr-only">X (Twitter)</span>
+                        <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+                            <path
+                                d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                        </svg>
+                    </a>
+                    <a href="#" class="text-gray-600 hover:text-white transition-colors">
+                        <span class="sr-only">LinkedIn</span>
+                        <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+                            <path
+                                d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script type="module" src="/src/main.js"></script>
+</body>
+
+</html>
