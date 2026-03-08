@@ -19,34 +19,15 @@
     <!-- ═══════════════════════════════════════════
          LOADING SCREEN — Resplandor Entry Experience
          ═══════════════════════════════════════════ -->
+    <!-- ═══════════════════════════════════════════
+         LOADING SCREEN — Resplandor Shader Entry
+         WebGL canvas is injected by loading.js
+         ═══════════════════════════════════════════ -->
     <div id="loading-screen" role="progressbar" aria-label="Cargando Resplandor">
         <div id="ls-noise"></div>
         <div id="ls-glow"></div>
-        <div id="ls-particles"></div>
-
-        <div id="ls-logo-group">
-            <!-- Phase 2: Real Logo PNG with golden glow -->
-            <div id="ls-logo-wrapper">
-                <div id="ls-logo-ring"></div>
-                <img id="ls-logo-img" src="/Resplandor_Logo.png" alt="Resplandor" />
-            </div>
-
-            <!-- Phase 3+4: Brand name + dot -->
-            <div id="ls-brand-row">
-                <div style="position:relative;">
-                    <span id="ls-brand-text">Resplandor</span>
-                    <div id="ls-text-sparks"></div>
-                </div>
-                <span id="ls-dot">.</span>
-            </div>
-
-            <!-- Phase 4b: Tagline -->
-            <p id="ls-tagline">Coffee Lab &times; Tech</p>
-        </div>
-
-        <button id="ls-skip" onclick="document.getElementById('loading-screen').dispatchEvent(new Event('skip'))">
-            Saltar — ESC
-        </button>
+        <!-- #rsp-shader-canvas injected here by JS -->
+        <button id="ls-skip">Saltar — ESC</button>
     </div>
     <!-- /LOADING SCREEN -->
 

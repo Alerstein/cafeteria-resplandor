@@ -1,10 +1,16 @@
 import './style.css'
 import './loading.css'
 import { initLoadingScreen } from './loading.js'
+import { initParticlesBg } from './particles-bg.js'
 
 document.addEventListener('DOMContentLoaded', () => {
     // ── 1. Loading Screen ──
     initLoadingScreen();
+
+    // ── 1b. Ambient background particles (after loader exits) ──
+    document.addEventListener('resplandor:loaded', () => {
+        initParticlesBg();
+    }, { once: true });
 
     // ── 2. Custom Cursor ──
     initCustomCursor();
