@@ -1,36 +1,12 @@
 /**
- * Resplandor — Loading Screen (High-Precision Edition)
+ * Resplandor — Loading Screen (Solid Logo + Shine Sweep Edition)
  *
- * Fix 1 — Particle anchoring: strong steering force keeps each particle
- *          tightly anchored to its home position while Perlin noise adds
- *          just a subtle organic shimmer (±4px). Result: logo fully legible.
- *
- * Fix 2 — Neon grid pulses: GLSL shader fires bright "pulse" streaks that
- *          travel along every grid line (both X and Y axes). Each line gets
- *          an independent random speed/phase via hash. Canvas gets a CSS
- *          drop-shadow for the overall neon-light-bleed effect.
- *
- * Fix 3 — Clean fade: on exit, both layers animate to opacity 0 before DOM
- *          removal. Cursor stays default at all times inside #loading-screen.
- *
- * Scoping: everything lives inside #loading-screen.
- *          No body/global style changes.
- *          Triggers on window 'load' (min 2.5 s guaranteed display).
+ * Logo: Resplandor_Logo.png displayed as a solid, crisp <img>.
+ * Shine: diagonal neon sweep (Electric Blue / White) cycling L→R.
+ * Background: WebGL2 neon-grid shader with independent neon pulses.
+ * Cursor: system default at all times inside #loading-screen.
+ * Exit: smooth opacity fade-out on window load (min 4 s display).
  */
-
-/* ════════════════════════════════════════════
-   BRAND PALETTE
-════════════════════════════════════════════ */
-const C_BLUE = [0, 174, 239];   // #00AEEF
-const C_GOLD = [253, 184, 19];   // #FDB813
-const C_WHITE = [255, 255, 255];
-
-function mapToBrand(r, g, b) {
-    // Dominant-channel mapping to brand palette
-    if (b > r && b > g && b > 60) return C_BLUE;
-    if (r > 140 && g > 90 && b < 110) return C_GOLD;
-    return C_WHITE;
-}
 
 /* ════════════════════════════════════════════
    WEBGL2 SHADERS
@@ -52,25 +28,15 @@ float h11(float n) { return fract(sin(n) * 43758.5453123); }
 float h21(vec2 p)  { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
 
 /* ── Neon grid pulse ──────────────────── */
-// Returns extra brightness for a neon pulse travelling along a grid line.
-// axis: 0 = horizontal (x-travelling), 1 = vertical (y-travelling)
-// lineIdx: integer index of the grid line
-// coord: the coordinate *along* the line (0-1 normalized)
 float pulse(int axis, float lineIdx, float coordAlong, float coordPerp, float cellSz) {
-    // Each line gets a unique random speed + phase
     float seed  = h11(lineIdx * 7.3 + float(axis) * 13.7);
-    float speed = mix(0.08, 0.22, seed);         // tiles/sec
+    float speed = mix(0.08, 0.22, seed);
     float phase = h11(seed * 91.3);
-
-    // Pulse position (wraps 0-1 across the full normalized axis)
     float pPos  = fract(u_t * speed + phase);
-    // Pulse width (narrow! gives a sharp spark)
     float width = mix(0.04, 0.10, h11(seed * 17.1));
-    // Intensity along the line
     float dist  = abs(coordAlong - pPos);
-    dist = min(dist, 1.0 - dist);               // wrap-around distance
+    dist = min(dist, 1.0 - dist);
     float intensity = smoothstep(width, 0.0, dist);
-    // On-line factor: how close are we to the grid line itself?
     float onLine = smoothstep(0.018 * cellSz, 0.0, coordPerp);
     return intensity * onLine * mix(0.6, 1.0, h11(seed));
 }
@@ -82,12 +48,10 @@ void main() {
     float cellLarge = 0.085;
     float cellSmall = 0.042;
 
-    // Large grid lines (distance to nearest line)
     vec2 gL = abs(mod(uv, cellLarge) - 0.5 * cellLarge);
     float lineL = min(gL.x, gL.y);
     float gridL = smoothstep(0.0065, 0.0, lineL);
 
-    // Fine grid (half density, dimmer)
     vec2 gS = abs(mod(uv, cellSmall) - 0.5 * cellSmall);
     float lineS = min(gS.x, gS.y);
     float gridS = smoothstep(0.0030, 0.0, lineS) * 0.30;
@@ -95,21 +59,17 @@ void main() {
     float gridMask = max(gridL, gridS);
 
     /* ── Neon pulses on large grid lines ─ */
-    // Normalized 0-1 coords within full uv range (roughly -0.9 to 0.9)
     vec2 uvN = (uv + 0.9) / 1.8;
 
-    // Horizontal lines — pulses travel along X
     float rowIdx    = floor((uv.y + 0.9) / cellLarge);
-    float perpH     = gL.y;                          // distance to nearest H line
-    float alongH    = fract(uvN.x);                  // X coord normalized 0-1
+    float perpH     = gL.y;
+    float alongH    = fract(uvN.x);
     float pulseH    = pulse(0, rowIdx, alongH, perpH, cellLarge);
 
-    // Additional offset rows for denser pulse coverage
     float rowIdx2   = floor((uv.y + 0.9) / cellSmall);
     float perpH2    = gS.y;
     float pulseH2   = pulse(0, rowIdx2 + 100.0, alongH, perpH2, cellSmall) * 0.5;
 
-    // Vertical lines — pulses travel along Y
     float colIdx    = floor((uv.x + 0.9) / cellLarge);
     float perpV     = gL.x;
     float alongV    = fract(uvN.y);
@@ -130,139 +90,23 @@ void main() {
     /* ── Colors ──────────────────────── */
     vec3 blue = vec3(0.000, 0.682, 0.937);   // #00AEEF
     vec3 gold = vec3(0.992, 0.722, 0.075);   // #FDB813
-    vec3 bg   = vec3(0.008, 0.016, 0.030);   // near-black deep blue
+    vec3 bg   = vec3(0.008, 0.016, 0.030);
 
-    // Base grid color: blue/gold blend by ripple phase
-    vec3 gridCol = mix(blue, gold, ripple * 0.55);
-
-    // Pulse color: brighter, more saturated
+    vec3 gridCol  = mix(blue, gold, ripple * 0.55);
     vec3 pulseCol = mix(blue * 1.6, vec3(1.0, 0.92, 0.5), totalPulse * 0.7);
 
-    // Combine
     float baseBright = gridMask * mix(0.25, 0.85, ripple);
     vec3 col = mix(bg, gridCol, baseBright);
-
-    // Add neon pulse on top
     col += pulseCol * totalPulse * 0.9;
 
-    // Shimmer: random per-cell flicker
     float shimmer = h21(floor(uv / cellLarge)) * 0.15;
     col += gridCol * shimmer * gridMask;
 
-    // Fade-in (first second)
     col *= smoothstep(0.0, 1.2, u_t);
-
-    // Exit fade-out
-    col = mix(col, vec3(0.0), u_fade * u_fade);
+    col  = mix(col, vec3(0.0), u_fade * u_fade);
 
     fragColor = vec4(col, 1.0);
 }`;
-
-/* ════════════════════════════════════════════
-   PERLIN NOISE (inline, zero deps)
-════════════════════════════════════════════ */
-const _p = (() => {
-    const a = new Uint8Array(256);
-    for (let i = 0; i < 256; i++) a[i] = i;
-    for (let i = 255; i > 0; i--) { const j = (Math.random() * (i + 1)) | 0;[a[i], a[j]] = [a[j], a[i]]; }
-    const t = new Uint8Array(512);
-    for (let i = 0; i < 512; i++) t[i] = a[i & 255];
-    return t;
-})();
-const _fd = t => t * t * t * (t * (t * 6 - 15) + 10);
-const _lp = (a, b, t) => a + t * (b - a);
-const _gr = (h, x, y) => { const u = h < 2 ? x : y, v = h < 2 ? y : x; return ((h & 1) ? -u : u) + ((h & 2) ? -v : v); };
-function noise2(x, y) {
-    const xi = Math.floor(x) & 255, yi = Math.floor(y) & 255;
-    const xf = x - Math.floor(x), yf = y - Math.floor(y);
-    const u = _fd(xf), v = _fd(yf);
-    return _lp(
-        _lp(_gr(_p[_p[xi] + yi], xf, yf), _gr(_p[_p[xi + 1] + yi], xf - 1, yf), u),
-        _lp(_gr(_p[_p[xi] + yi + 1], xf, yf - 1), _gr(_p[_p[xi + 1] + yi + 1], xf - 1, yf - 1), u),
-        v
-    );
-}
-
-/* ════════════════════════════════════════════
-   PARTICLE — anchored, brand-colored
-════════════════════════════════════════════ */
-class Particle {
-    constructor(hx, hy, brand) {
-        this.hx = hx; this.hy = hy;   // HOME position (from logo pixel)
-        this.brand = brand;
-        this.x = hx; this.y = hy;
-        this.vx = 0; this.vy = 0;
-        this.sz = Math.random() * 0.9 + 0.9;  // 0.9–1.8 px — tight for legibility
-        this.seed = Math.random() * 2000;
-        this.alpha = 0;
-        this.scattering = false;
-        this.svx = 0; this.svy = 0;
-    }
-
-    update(elapsed, mx, my) {
-        /* ── Fade in ───────────────────────── */
-        if (this.alpha < 1) this.alpha = Math.min(1, this.alpha + 0.045);
-
-        /* ── Scatter (exit) ────────────────── */
-        if (this.scattering) {
-            this.x += this.svx; this.y += this.svy;
-            this.svx *= 0.93; this.svy *= 0.93;
-            this.alpha = Math.max(0, this.alpha - 0.022);
-            return;
-        }
-
-        /* ── Strong home attraction (steering) */
-        // Primary: always pull back to exact home position
-        const toHomeX = this.hx - this.x;
-        const toHomeY = this.hy - this.y;
-        this.vx += toHomeX * 0.14;
-        this.vy += toHomeY * 0.14;
-
-        /* ── Subtle Perlin noise shimmer ±4px ─ */
-        const ns = 0.0022, nt = elapsed * 0.00014;
-        const nx = noise2(this.hx * ns + nt + this.seed, this.hy * ns);
-        const ny = noise2(this.hy * ns + nt, this.hx * ns + 80 + this.seed);
-        this.vx += nx * 0.28;   // ≈ ±4px shimmer, not ±10px drift
-        this.vy += ny * 0.28;
-
-        /* ── Mouse repulsion ───────────────── */
-        const dx = this.x - mx, dy = this.y - my;
-        const dSq = dx * dx + dy * dy;
-        const R = 70;
-        if (dSq < R * R && dSq > 0.01) {
-            const d = Math.sqrt(dSq);
-            const f = (1 - d / R) * 5.5;
-            this.vx += (dx / d) * f;
-            this.vy += (dy / d) * f;
-        }
-
-        /* ── Damping (tight) ───────────────── */
-        this.vx *= 0.72;   // strong damping → settles fast at home
-        this.vy *= 0.72;
-        this.x += this.vx;
-        this.y += this.vy;
-    }
-
-    scatter() {
-        this.scattering = true;
-        const cx = window.innerWidth / 2, cy = window.innerHeight / 2;
-        const a = Math.atan2(this.hy - cy, this.hx - cx) + (Math.random() - 0.5) * 0.9;
-        const sp = 6 + Math.random() * 13;
-        this.svx = Math.cos(a) * sp;
-        this.svy = Math.sin(a) * sp;
-    }
-
-    draw(ctx) {
-        // No per-particle shadowBlur — keeps text edges crisp.
-        // Glow effect comes from CSS filter on the canvas element.
-        const [r, g, b] = this.brand;
-        ctx.globalAlpha = this.alpha;
-        ctx.fillStyle = `rgb(${r},${g},${b})`;
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.sz, 0, Math.PI * 2);
-        ctx.fill();
-    }
-}
 
 /* ════════════════════════════════════════════
    EXPORTS
@@ -280,139 +124,75 @@ function _boot() {
 
     const W = window.innerWidth, H = window.innerHeight;
 
-    /* ── WebGL2 background ──────────────── */
+    /* ── WebGL2 neon-grid background ──── */
     const bg = _buildBG(screen, W, H);
 
-    /* ── Particle canvas (built after logo loads) */
-    const logoImg = new Image();
-    logoImg.crossOrigin = 'anonymous';
-    logoImg.src = '/Resplandor_Logo.png';
+    /* ── Logo + shine sweep ─────────────
+       Two-layer background elimination:
+       1. JS strips any pixel with luma < 55 (catches dark blue-grey PNG bg)
+       2. CSS mix-blend-mode: screen on the wrapper removes any residual tint
+       Result: only the bright cup + text are visible above the neon grid.
+    ────────────────────────────────────── */
+    const wrap = document.createElement('div');
+    wrap.id = 'ls-logo-wrap';
 
-    let particles = [], pCanvas = null, pCtx = null;
-    // Initialize mouse far off-screen so repulsion doesn't affect
-    // particles until user actually moves the mouse
-    let mouseX = -9999, mouseY = -9999, startTs = null, loopId = null;
+    const logo = document.createElement('img');
+    logo.id = 'ls-logo-img';
+    logo.alt = 'Resplandor';
+    logo.draggable = false;
 
-    const onMM = e => { mouseX = e.clientX; mouseY = e.clientY; };
-    window.addEventListener('mousemove', onMM, { passive: true });
+    wrap.appendChild(logo);
+    screen.appendChild(wrap);
 
-    function buildParticles() {
-        /* Scale logo to 72% viewport width, max 760px — larger = more pixels to sample */
-        const maxW = Math.min(W * 0.72, 760);
-        const sc = maxW / logoImg.naturalWidth;
-        const lw = Math.round(logoImg.naturalWidth * sc);
-        const lh = Math.round(logoImg.naturalHeight * sc);
-
-        const off = document.createElement('canvas');
-        off.width = lw; off.height = lh;
-        const c2 = off.getContext('2d');
-        c2.drawImage(logoImg, 0, 0, lw, lh);
-        const pd = c2.getImageData(0, 0, lw, lh).data;
-
-        /* ── STEP 1: collect ALL bright pixels first (brightness-first scan) */
-        const bright = []; // [{px, py, r, g, b}]
-        for (let py = 0; py < lh; py++) {
-            for (let px = 0; px < lw; px++) {
-                const i = (py * lw + px) * 4;
-                const a = pd[i + 3];
-                const r = pd[i], g = pd[i + 1], b = pd[i + 2];
-                const luma = 0.299 * r + 0.587 * g + 0.114 * b;
-                // Very permissive threshold — catch text edges and mid-tones
-                if (a < 10 || luma < 18) continue;
-                bright.push({ px, py, r, g, b });
-            }
+    /* Strip near-black / dark-bg pixels from the PNG in-browser */
+    const srcImg = new Image();
+    srcImg.onload = () => {
+        const oc = document.createElement('canvas');
+        oc.width = srcImg.naturalWidth;
+        oc.height = srcImg.naturalHeight;
+        const ctx = oc.getContext('2d');
+        ctx.drawImage(srcImg, 0, 0);
+        const id = ctx.getImageData(0, 0, oc.width, oc.height);
+        const d = id.data;
+        // Raise threshold to 55 to catch dark-blue-grey backgrounds
+        for (let i = 0; i < d.length; i += 4) {
+            const luma = 0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2];
+            if (luma < 55) d[i + 3] = 0;
         }
+        ctx.putImageData(id, 0, 0);
+        logo.src = oc.toDataURL('image/png');
+    };
+    // Fallback: show original while canvas processes
+    logo.src = '/Resplandor_Logo.png';
+    srcImg.src = '/Resplandor_Logo.png';
 
-        /* ── STEP 2: subsample from bright pixels to hit target count */
-        const TARGET = 14000;
-        // If we have more than target, stride through them; else take all
-        const bStride = bright.length > TARGET ? Math.ceil(bright.length / TARGET) : 1;
 
-        /* Center logo on screen */
-        const ox = Math.round((W - lw) / 2);
-        const oy = Math.round((H - lh) / 2);
 
-        for (let k = 0; k < bright.length; k += bStride) {
-            const { px, py, r, g, b } = bright[k];
-            particles.push(new Particle(ox + px, oy + py, mapToBrand(r, g, b)));
-        }
-
-        /* Particle canvas — CSS glow filter gives global neon bleed */
-        pCanvas = document.createElement('canvas');
-        pCanvas.width = W; pCanvas.height = H;
-        Object.assign(pCanvas.style, {
-            position: 'absolute', inset: '0',
-            width: '100%', height: '100%',
-            zIndex: '10', pointerEvents: 'none',
-            cursor: 'default',
-            // Single canvas-level glow — no per-particle shadowBlur needed
-            filter: 'drop-shadow(0 0 3px rgba(0,174,239,0.7)) drop-shadow(0 0 8px rgba(253,184,19,0.35))',
-        });
-        screen.appendChild(pCanvas);
-        pCtx = pCanvas.getContext('2d');
-
-        function render(ts) {
-            if (!startTs) startTs = ts;
-            const elapsed = ts - startTs;
-            pCtx.clearRect(0, 0, W, H);
-
-            // Update all
-            for (const p of particles) p.update(elapsed, mouseX, mouseY);
-
-            // Batch draw by color group for performance
-            for (const col of [C_BLUE, C_GOLD, C_WHITE]) {
-                const [r, g, b] = col;
-                const group = particles.filter(p => p.brand === col && p.alpha > 0.005);
-                if (!group.length) continue;
-                pCtx.fillStyle = `rgb(${r},${g},${b})`;
-                pCtx.beginPath();
-                for (const p of group) {
-                    pCtx.globalAlpha = p.alpha;
-                    pCtx.moveTo(p.x + p.sz, p.y);
-                    pCtx.arc(p.x, p.y, p.sz, 0, Math.PI * 2);
-                }
-                pCtx.fill();
-            }
-
-            if (particles.some(p => p.alpha > 0.005)) loopId = requestAnimationFrame(render);
-        }
-        loopId = requestAnimationFrame(render);
-    }
-
-    logoImg.complete && logoImg.naturalWidth > 0
-        ? buildParticles()
-        : (logoImg.onload = buildParticles);
-
-    /* ── Skip / Exit ─────────────────────── */
+    /* ── Skip / Exit ─────────────────── */
     let exiting = false;
     function doExit() {
         if (exiting) return;
         exiting = true;
-        window.removeEventListener('mousemove', onMM);
-        particles.forEach(p => p.scatter());
         bg.fadeOut();
+        /* Smooth opacity-0 fade of entire screen */
+        screen.style.transition = 'opacity 0.6s ease';
+        screen.style.opacity = '0';
+        screen.style.cursor = 'default';
         setTimeout(() => {
-            cancelAnimationFrame(loopId);
             bg.stop();
-            /* Smooth opacity-0 fade of entire screen */
-            screen.style.transition = 'opacity 0.55s ease';
-            screen.style.opacity = '0';
-            screen.style.cursor = 'default';
-            setTimeout(() => {
-                screen.style.display = 'none';
-                screen.style.opacity = '';
-                document.body.classList.add('page-entered');
-                document.dispatchEvent(new CustomEvent('resplandor:loaded'));
-            }, 580);
-        }, 1200);
+            screen.style.display = 'none';
+            screen.style.opacity = '';
+            document.body.classList.add('page-entered');
+            document.dispatchEvent(new CustomEvent('resplandor:loaded'));
+        }, 650);
     }
 
     const btn = document.getElementById('ls-skip');
     if (btn) btn.addEventListener('click', doExit, { once: true });
     document.addEventListener('keydown', e => e.key === 'Escape' && doExit(), { once: true });
 
-    /* ── window.load trigger (min 2.5 s) ─── */
-    const MIN_MS = 4000;  // Always show at least 4s, even on fast localhost
+    /* ── window.load trigger (min 4 s) ── */
+    const MIN_MS = 4000;
     const t0 = performance.now();
     function onLoaded() {
         const wait = MIN_MS - (performance.now() - t0);
@@ -435,7 +215,6 @@ function _buildBG(screen, W, H) {
         position: 'absolute', inset: '0',
         width: '100%', height: '100%',
         zIndex: '0', pointerEvents: 'none', cursor: 'default',
-        /* Neon global glow — light bleed on the canvas element */
         filter: 'drop-shadow(0 0 6px rgba(0,174,239,0.35)) drop-shadow(0 0 18px rgba(0,174,239,0.12))',
         transition: 'opacity 0.7s ease',
     });
@@ -444,7 +223,6 @@ function _buildBG(screen, W, H) {
     const gl = cvs.getContext('webgl2');
     if (!gl) { screen.style.background = '#040c18'; return { fadeOut() { }, stop() { } }; }
 
-    /* Compile & link */
     function mkShader(type, src) {
         const s = gl.createShader(type);
         gl.shaderSource(s, src); gl.compileShader(s);

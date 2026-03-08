@@ -1,31 +1,30 @@
 /* ══════════════════════════════════════════════
-   Resplandor — Loading Screen Styles (Shader Version)
-   All heavy animations are now handled by WebGL.
-   This file keeps: base layout, noise, glow, skip btn.
+   Resplandor — Loading Screen
+   WebGL neon-grid canvas injected by loading.js (z-index 0).
+   Logo wrapper sits above it using mix-blend-mode: screen so
+   the dark PNG background vanishes into the black container.
    ══════════════════════════════════════════════ */
 
-/* ── Screen base ── */
+/* ── Screen / container base ── */
 #loading-screen {
     position: fixed;
     inset: 0;
     z-index: 9999;
-    background: #0F0F0F;
+    background: #000;
+    /* pure black — required for screen blend */
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     overflow: hidden;
-    cursor: default;
-    /* system cursor inside loader */
+    cursor: default !important;
 }
 
-/* WebGL canvas fills the loader */
-#rsp-shader-canvas {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
+/* Force system cursor everywhere inside the loader */
+#loading-screen *,
+#loading-screen ::before,
+#loading-screen ::after {
+    cursor: default !important;
 }
 
 /* ── Page entrance fade-in after loading ── */
@@ -67,7 +66,10 @@ body.page-entered footer {
 #ls-glow {
     position: absolute;
     inset: 0;
-    background: radial-gradient(circle at 50% 50%, rgba(250, 204, 21, 0.07) 0%, rgba(30, 64, 175, 0.06) 40%, transparent 65%);
+    background: radial-gradient(circle at 50% 50%,
+            rgba(0, 174, 239, 0.10) 0%,
+            rgba(30, 64, 175, 0.07) 40%,
+            transparent 65%);
     pointer-events: none;
     animation: ls-glow-pulse 3.5s ease-in-out infinite;
 }
@@ -84,6 +86,85 @@ body.page-entered footer {
     }
 }
 
+/* ══════════════════════════════════════════════
+   LOGO WRAPPER — mix-blend-mode: screen
+   Dark pixels in the PNG → transparent on #000.
+   Bright cup + text → visible above the neon grid.
+   ══════════════════════════════════════════════ */
+
+#ls-logo-wrap {
+    position: relative;
+    z-index: 10;
+    width: min(72vw, 300px);
+    height: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    /* clips the ::after shine to the logo area */
+    /* The magic: black background of the PNG = transparent on #000 */
+    mix-blend-mode: screen;
+    animation: ls-logo-in 0.85s cubic-bezier(0.22, 1, 0.36, 1) 0.3s both;
+}
+
+/* ── Logo image ── */
+#ls-logo-img {
+    width: 100%;
+    height: auto;
+    display: block;
+    filter: drop-shadow(0 0 10px rgba(0, 174, 239, 0.5));
+    pointer-events: none;
+    user-select: none;
+}
+
+/* ── Shine sweep via ::after pseudo-element ── */
+#ls-logo-wrap::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -150%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to right,
+            transparent 0%,
+            rgba(255, 255, 255, 0.10) 40%,
+            rgba(255, 255, 255, 0.80) 50%,
+            rgba(255, 255, 255, 0.10) 60%,
+            transparent 100%);
+    transform: skewX(-25deg);
+    animation: ls-shine-sweep 3s infinite ease-in-out;
+    /* Delay so the logo finishes fading in first */
+    animation-delay: 1.0s;
+}
+
+/* Logo entrance */
+@keyframes ls-logo-in {
+    from {
+        opacity: 0;
+        transform: translateY(14px) scale(0.96);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Shine band sweeps left → right, then holds before next cycle */
+@keyframes ls-shine-sweep {
+    0% {
+        left: -150%;
+    }
+
+    50% {
+        left: 150%;
+    }
+
+    100% {
+        left: 150%;
+    }
+}
+
 /* ── Skip button ── */
 #ls-skip {
     position: absolute;
@@ -96,15 +177,15 @@ body.page-entered footer {
     color: rgba(229, 231, 235, 0.25);
     background: none;
     border: none;
-    cursor: pointer;
+    cursor: pointer !important;
     padding: 8px 12px;
-    z-index: 10;
+    z-index: 20;
     transition: color 0.2s;
     animation: ls-fade-in-delayed 1s ease 1.0s both;
 }
 
 #ls-skip:hover {
-    color: rgba(229, 231, 235, 0.7);
+    color: rgba(229, 231, 235, 0.70);
 }
 
 @keyframes ls-fade-in-delayed {
