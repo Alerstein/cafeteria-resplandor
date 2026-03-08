@@ -192,7 +192,7 @@ class Particle {
         this.brand = brand;
         this.x = hx; this.y = hy;
         this.vx = 0; this.vy = 0;
-        this.sz = Math.random() * 1.6 + 1.4;  // 1.4–3.0 px
+        this.sz = Math.random() * 0.9 + 0.9;  // 0.9–1.8 px — tight for legibility
         this.seed = Math.random() * 2000;
         this.alpha = 0;
         this.scattering = false;
@@ -253,16 +253,14 @@ class Particle {
     }
 
     draw(ctx) {
+        // No per-particle shadowBlur — keeps text edges crisp.
+        // Glow effect comes from CSS filter on the canvas element.
         const [r, g, b] = this.brand;
-        ctx.save();
         ctx.globalAlpha = this.alpha;
-        ctx.shadowColor = `rgb(${r},${g},${b})`;
-        ctx.shadowBlur = this.sz * 3;
+        ctx.fillStyle = `rgb(${r},${g},${b})`;
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.sz, 0, Math.PI * 2);
-        ctx.fillStyle = `rgb(${r},${g},${b})`;
         ctx.fill();
-        ctx.restore();
     }
 }
 
@@ -291,14 +289,16 @@ function _boot() {
     logoImg.src = '/Resplandor_Logo.png';
 
     let particles = [], pCanvas = null, pCtx = null;
-    let mouseX = W / 2, mouseY = H / 2, startTs = null, loopId = null;
+    // Initialize mouse far off-screen so repulsion doesn't affect
+    // particles until user actually moves the mouse
+    let mouseX = -9999, mouseY = -9999, startTs = null, loopId = null;
 
     const onMM = e => { mouseX = e.clientX; mouseY = e.clientY; };
     window.addEventListener('mousemove', onMM, { passive: true });
 
     function buildParticles() {
-        /* Scale logo to 64% viewport width, max 660px */
-        const maxW = Math.min(W * 0.64, 660);
+        /* Scale logo to 72% viewport width, max 760px — larger = more pixels to sample */
+        const maxW = Math.min(W * 0.72, 760);
         const sc = maxW / logoImg.naturalWidth;
         const lw = Math.round(logoImg.naturalWidth * sc);
         const lh = Math.round(logoImg.naturalHeight * sc);
@@ -309,24 +309,35 @@ function _boot() {
         c2.drawImage(logoImg, 0, 0, lw, lh);
         const pd = c2.getImageData(0, 0, lw, lh).data;
 
-        /* Dense sampling: target 9000 particles */
-        const stride = Math.max(1, Math.round(Math.sqrt((lw * lh) / 9000)));
-        /* Center the logo on screen */
-        const ox = Math.round((W - lw) / 2);
-        const oy = Math.round((H - lh) / 2);
-
-        for (let py = 0; py < lh; py += stride) {
-            for (let px = 0; px < lw; px += stride) {
+        /* ── STEP 1: collect ALL bright pixels first (brightness-first scan) */
+        const bright = []; // [{px, py, r, g, b}]
+        for (let py = 0; py < lh; py++) {
+            for (let px = 0; px < lw; px++) {
                 const i = (py * lw + px) * 4;
-                const a = pd[i + 3], r = pd[i], g = pd[i + 1], b = pd[i + 2];
-                /* Skip transparent AND near-black pixels (logo background) */
+                const a = pd[i + 3];
+                const r = pd[i], g = pd[i + 1], b = pd[i + 2];
                 const luma = 0.299 * r + 0.587 * g + 0.114 * b;
-                if (a < 12 || luma < 28) continue;
-                particles.push(new Particle(ox + px, oy + py, mapToBrand(r, g, b)));
+                // Very permissive threshold — catch text edges and mid-tones
+                if (a < 10 || luma < 18) continue;
+                bright.push({ px, py, r, g, b });
             }
         }
 
-        /* Particle canvas */
+        /* ── STEP 2: subsample from bright pixels to hit target count */
+        const TARGET = 14000;
+        // If we have more than target, stride through them; else take all
+        const bStride = bright.length > TARGET ? Math.ceil(bright.length / TARGET) : 1;
+
+        /* Center logo on screen */
+        const ox = Math.round((W - lw) / 2);
+        const oy = Math.round((H - lh) / 2);
+
+        for (let k = 0; k < bright.length; k += bStride) {
+            const { px, py, r, g, b } = bright[k];
+            particles.push(new Particle(ox + px, oy + py, mapToBrand(r, g, b)));
+        }
+
+        /* Particle canvas — CSS glow filter gives global neon bleed */
         pCanvas = document.createElement('canvas');
         pCanvas.width = W; pCanvas.height = H;
         Object.assign(pCanvas.style, {
@@ -334,16 +345,35 @@ function _boot() {
             width: '100%', height: '100%',
             zIndex: '10', pointerEvents: 'none',
             cursor: 'default',
+            // Single canvas-level glow — no per-particle shadowBlur needed
+            filter: 'drop-shadow(0 0 3px rgba(0,174,239,0.7)) drop-shadow(0 0 8px rgba(253,184,19,0.35))',
         });
         screen.appendChild(pCanvas);
         pCtx = pCanvas.getContext('2d');
 
         function render(ts) {
             if (!startTs) startTs = ts;
-            pCtx.clearRect(0, 0, W, H);
             const elapsed = ts - startTs;
+            pCtx.clearRect(0, 0, W, H);
+
+            // Update all
             for (const p of particles) p.update(elapsed, mouseX, mouseY);
-            for (const p of particles) p.draw(pCtx);
+
+            // Batch draw by color group for performance
+            for (const col of [C_BLUE, C_GOLD, C_WHITE]) {
+                const [r, g, b] = col;
+                const group = particles.filter(p => p.brand === col && p.alpha > 0.005);
+                if (!group.length) continue;
+                pCtx.fillStyle = `rgb(${r},${g},${b})`;
+                pCtx.beginPath();
+                for (const p of group) {
+                    pCtx.globalAlpha = p.alpha;
+                    pCtx.moveTo(p.x + p.sz, p.y);
+                    pCtx.arc(p.x, p.y, p.sz, 0, Math.PI * 2);
+                }
+                pCtx.fill();
+            }
+
             if (particles.some(p => p.alpha > 0.005)) loopId = requestAnimationFrame(render);
         }
         loopId = requestAnimationFrame(render);
@@ -382,7 +412,7 @@ function _boot() {
     document.addEventListener('keydown', e => e.key === 'Escape' && doExit(), { once: true });
 
     /* ── window.load trigger (min 2.5 s) ─── */
-    const MIN_MS = 2500;
+    const MIN_MS = 4000;  // Always show at least 4s, even on fast localhost
     const t0 = performance.now();
     function onLoaded() {
         const wait = MIN_MS - (performance.now() - t0);
