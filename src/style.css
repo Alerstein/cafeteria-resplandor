@@ -16,69 +16,7 @@
     body {
         background-color: var(--color-cafeteria-dark);
         color: #ffffff;
-        cursor: none;
     }
-
-    /* Restore cursor for inputs */
-    input,
-    textarea,
-    select {
-        cursor: text;
-    }
-
-    a,
-    button {
-        cursor: none;
-    }
-}
-
-/* ─────────────────────────────────────────
-   CUSTOM CURSOR
-───────────────────────────────────────── */
-#cursor-dot {
-    position: fixed;
-    width: 10px;
-    height: 10px;
-    background: #FACC15;
-    border-radius: 50%;
-    pointer-events: none;
-    z-index: 99999;
-    transform: translate(-50%, -50%);
-    box-shadow: 0 0 12px rgba(250, 204, 21, 0.9), 0 0 24px rgba(250, 204, 21, 0.4);
-    transition: transform 0.08s ease, width 0.2s ease, height 0.2s ease, box-shadow 0.2s ease;
-    will-change: transform;
-}
-
-#cursor-trail {
-    position: fixed;
-    width: 30px;
-    height: 30px;
-    border: 1.5px solid rgba(30, 64, 175, 0.7);
-    border-radius: 50%;
-    pointer-events: none;
-    z-index: 99998;
-    transform: translate(-50%, -50%);
-    box-shadow: 0 0 10px rgba(30, 64, 175, 0.4), inset 0 0 6px rgba(30, 64, 175, 0.1);
-    transition: transform 0.18s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-        width 0.25s ease,
-        height 0.25s ease,
-        opacity 0.2s ease,
-        border-color 0.2s ease;
-    will-change: transform;
-}
-
-/* Cursor hover states */
-body.cursor-hover #cursor-dot {
-    width: 14px;
-    height: 14px;
-    box-shadow: 0 0 20px rgba(250, 204, 21, 1), 0 0 40px rgba(250, 204, 21, 0.5);
-}
-
-body.cursor-hover #cursor-trail {
-    width: 44px;
-    height: 44px;
-    border-color: rgba(30, 64, 175, 0.9);
-    box-shadow: 0 0 18px rgba(30, 64, 175, 0.6), inset 0 0 10px rgba(30, 64, 175, 0.15);
 }
 
 /* ─────────────────────────────────────────
@@ -126,7 +64,7 @@ body.code-mode::before {
     border: 1px solid rgba(59, 130, 246, 0.25);
     background: transparent;
     color: rgba(156, 163, 175, 0.8);
-    cursor: none;
+    cursor: pointer;
     transition: color 0.25s ease, border-color 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
     flex-shrink: 0;
 }

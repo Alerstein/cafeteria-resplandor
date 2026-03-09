@@ -12,10 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
         initParticlesBg();
     }, { once: true });
 
-    // ── 2. Custom Cursor ──
-    initCustomCursor();
-
-    // ── 3. Mobile Menu ──
+    // ── 2. Mobile Menu ──
     const menuBtn = document.getElementById('mobile-menu-btn');
     const mobileMenu = document.getElementById('mobile-menu');
     const closeMenuBtn = document.getElementById('close-menu-btn');
@@ -62,54 +59,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // ── 7. Code/Night Mode Toggle ──
     initCodeModeToggle();
 });
-
-/* ─────────────────────────────────────
-   CUSTOM CURSOR
-───────────────────────────────────── */
-function initCustomCursor() {
-    const dot = document.getElementById('cursor-dot');
-    const trail = document.getElementById('cursor-trail');
-    if (!dot || !trail) return;
-
-    let mouseX = 0, mouseY = 0;
-    let trailX = 0, trailY = 0;
-    let rafId;
-
-    document.addEventListener('mousemove', (e) => {
-        mouseX = e.clientX;
-        mouseY = e.clientY;
-        // Dot follows instantly
-        dot.style.left = `${mouseX}px`;
-        dot.style.top = `${mouseY}px`;
-    }, { passive: true });
-
-    // Trail follows with easing via RAF
-    function animateTrail() {
-        trailX += (mouseX - trailX) * 0.14;
-        trailY += (mouseY - trailY) * 0.14;
-        trail.style.left = `${trailX}px`;
-        trail.style.top = `${trailY}px`;
-        rafId = requestAnimationFrame(animateTrail);
-    }
-    animateTrail();
-
-    // Hover state for interactive elements
-    const interactiveEls = document.querySelectorAll('a, button, [role="button"], input, textarea, label, select');
-    interactiveEls.forEach(el => {
-        el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
-        el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
-    });
-
-    // Hide cursor when leaving window
-    document.addEventListener('mouseleave', () => {
-        dot.style.opacity = '0';
-        trail.style.opacity = '0';
-    });
-    document.addEventListener('mouseenter', () => {
-        dot.style.opacity = '1';
-        trail.style.opacity = '1';
-    });
-}
 
 /* ─────────────────────────────────────
    HERO PARALLAX
