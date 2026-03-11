@@ -11,6 +11,38 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* Previene Flash de contenido sin estilo (FOUC) durante la carga de CSS de Vite */
+        html,
+        body {
+            background-color: #000;
+            margin: 0;
+            /* prevenimos scroll antes de cargar layout completo eliminando barra, pero sin bloquear permanentemente */
+        }
+
+        #loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #000;
+            z-index: 999999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #ls-skip {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* El wrapper del logo se mantiene transparente hasta que CSS lo estilice */
+        #ls-logo-wrap {
+            opacity: 0;
+        }
+    </style>
 </head>
 
 <body
@@ -268,7 +300,7 @@
 
                         <div
                             class="relative rounded-2xl overflow-hidden shadow-glow-blue border border-[var(--color-cafeteria-accent)]/20 z-10 bg-[var(--color-cafeteria-light)]">
-                            <img src="/about_img.png" alt="Barista en coffee lab tech"
+                            <img src="/about_img_tech.png" alt="Máquina de café tech"
                                 class="w-full h-auto object-cover opacity-90 transition-transform duration-700 hover:scale-[1.03]">
                             <div
                                 class="absolute inset-0 bg-gradient-to-t from-[var(--color-cafeteria-dark)]/40 to-transparent pointer-events-none">
@@ -363,7 +395,8 @@
                 <div class="text-center mb-20 reveal-hidden">
                     <h2
                         class="text-xs font-bold text-[var(--color-cafeteria-brand)] tracking-widest uppercase mb-4 text-glow-blue">
-                        Combustible Puro</h2>
+                        Nuestro Menú
+                    </h2>
                     <h3 class="text-4xl md:text-5xl font-extrabold text-white">Ingeniería en cada taza</h3>
                 </div>
 
@@ -382,7 +415,7 @@
                             <!-- Badge Price -->
                             <div
                                 class="absolute top-4 right-4 bg-[var(--color-cafeteria-brand)] text-white text-xs font-bold px-3 py-1 rounded-full z-20 shadow-lg shadow-[var(--color-cafeteria-brand)]/40">
-                                $4.50</div>
+                                $4.500</div>
                         </div>
                         <div class="p-8 relative z-20 -mt-10">
                             <h4
@@ -412,7 +445,7 @@
                                 class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-80 group-hover:opacity-100 mix-blend-luminosity group-hover:mix-blend-normal">
                             <div
                                 class="absolute top-4 right-4 bg-[var(--color-cafeteria-brand)] text-white text-xs font-bold px-3 py-1 rounded-full z-20 shadow-lg shadow-[var(--color-cafeteria-brand)]/40">
-                                $4.00</div>
+                                $4.000</div>
                         </div>
                         <div class="p-8 relative z-20 -mt-10">
                             <h4
@@ -441,7 +474,7 @@
                                 class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-80 group-hover:opacity-100 mix-blend-luminosity group-hover:mix-blend-normal">
                             <div
                                 class="absolute top-4 right-4 bg-[var(--color-cafeteria-brand)] text-white text-xs font-bold px-3 py-1 rounded-full z-20 shadow-lg shadow-[var(--color-cafeteria-brand)]/40">
-                                $5.50</div>
+                                $5.500</div>
                             <div
                                 class="absolute top-4 left-4 bg-[var(--color-cafeteria-accent)] text-[var(--color-cafeteria-dark)] text-xs font-bold px-2 py-1 flex items-center gap-1 rounded shadow-lg z-20">
                                 <span class="w-1.5 h-1.5 rounded-full bg-black animate-pulse"></span>
@@ -470,12 +503,11 @@
                             <div
                                 class="absolute inset-0 bg-gradient-to-t from-[var(--color-cafeteria-dark)] to-transparent z-10">
                             </div>
-                            <img src="https://images.unsplash.com/photo-1544254848-15a0deffb9fe?q=80&w=800&auto=format&fit=crop"
-                                alt="AeroPress Debugger"
+                            <img src="/aeropress.png" alt="AeroPress Debugger"
                                 class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-80 group-hover:opacity-100 mix-blend-luminosity group-hover:mix-blend-normal">
                             <div
                                 class="absolute top-4 right-4 bg-[var(--color-cafeteria-brand)] text-white text-xs font-bold px-3 py-1 rounded-full z-20 shadow-lg shadow-[var(--color-cafeteria-brand)]/40">
-                                $4.00</div>
+                                $4.000</div>
                         </div>
                         <div class="p-8 relative z-20 -mt-10">
                             <h4
@@ -499,12 +531,12 @@
                             <div
                                 class="absolute inset-0 bg-gradient-to-t from-[var(--color-cafeteria-dark)] to-transparent z-10">
                             </div>
-                            <img src="https://images.unsplash.com/photo-1515823064-db0cb9664654?q=80&w=800&auto=format&fit=crop"
+                            <img src="/matcha.png"
                                 alt="Matcha Latte Syntax"
                                 class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-80 group-hover:opacity-100 mix-blend-luminosity group-hover:mix-blend-normal">
                             <div
                                 class="absolute top-4 right-4 bg-[var(--color-cafeteria-brand)] text-white text-xs font-bold px-3 py-1 rounded-full z-20 shadow-lg shadow-[var(--color-cafeteria-brand)]/40">
-                                $5.00</div>
+                                $5.000</div>
                         </div>
                         <div class="p-8 relative z-20 -mt-10">
                             <h4
@@ -528,12 +560,12 @@
                             <div
                                 class="absolute inset-0 bg-gradient-to-t from-[var(--color-cafeteria-dark)] to-transparent z-10">
                             </div>
-                            <img src="https://images.unsplash.com/photo-1485608240409-781e66c7216a?q=80&w=800&auto=format&fit=crop"
+                            <img src="/espresso.png"
                                 alt="Espresso Macchiato 0x"
                                 class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-80 group-hover:opacity-100 mix-blend-luminosity group-hover:mix-blend-normal">
                             <div
                                 class="absolute top-4 right-4 bg-[var(--color-cafeteria-brand)] text-white text-xs font-bold px-3 py-1 rounded-full z-20 shadow-lg shadow-[var(--color-cafeteria-brand)]/40">
-                                $3.50</div>
+                                $3.500</div>
                         </div>
                         <div class="p-8 relative z-20 -mt-10">
                             <h4
@@ -557,12 +589,11 @@
                             <div
                                 class="absolute inset-0 bg-gradient-to-t from-[var(--color-cafeteria-dark)] to-transparent z-10">
                             </div>
-                            <img src="https://images.unsplash.com/photo-1510271185547-0d5bfa7a7b3d?q=80&w=800&auto=format&fit=crop"
-                                alt="Chemex Compiler"
+                            <img src="/chemex.png" alt="Chemex Compiler"
                                 class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-80 group-hover:opacity-100 mix-blend-luminosity group-hover:mix-blend-normal">
                             <div
                                 class="absolute top-4 right-4 bg-[var(--color-cafeteria-brand)] text-white text-xs font-bold px-3 py-1 rounded-full z-20 shadow-lg shadow-[var(--color-cafeteria-brand)]/40">
-                                $6.00</div>
+                                $6.000</div>
                         </div>
                         <div class="p-8 relative z-20 -mt-10">
                             <h4
@@ -586,12 +617,11 @@
                             <div
                                 class="absolute inset-0 bg-gradient-to-t from-[var(--color-cafeteria-dark)] to-transparent z-10">
                             </div>
-                            <img src="https://images.unsplash.com/photo-1497935586351-b67a49e012bf?q=80&w=800&auto=format&fit=crop"
-                                alt="Latte Cloud Native"
+                            <img src="/latte_cloud.png" alt="Latte Cloud Native"
                                 class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-80 group-hover:opacity-100 mix-blend-luminosity group-hover:mix-blend-normal">
                             <div
                                 class="absolute top-4 right-4 bg-[var(--color-cafeteria-brand)] text-white text-xs font-bold px-3 py-1 rounded-full z-20 shadow-lg shadow-[var(--color-cafeteria-brand)]/40">
-                                $4.50</div>
+                                $8.800</div>
                         </div>
                         <div class="p-8 relative z-20 -mt-10">
                             <h4
@@ -615,12 +645,11 @@
                             <div
                                 class="absolute inset-0 bg-gradient-to-t from-[var(--color-cafeteria-dark)] to-transparent z-10">
                             </div>
-                            <img src="https://images.unsplash.com/photo-1543621721-dba024e6de75?q=80&w=800&auto=format&fit=crop"
-                                alt="Chai Root Access"
+                            <img src="/chai.png" alt="Chai Root Access"
                                 class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-80 group-hover:opacity-100 mix-blend-luminosity group-hover:mix-blend-normal">
                             <div
                                 class="absolute top-4 right-4 bg-[var(--color-cafeteria-brand)] text-white text-xs font-bold px-3 py-1 rounded-full z-20 shadow-lg shadow-[var(--color-cafeteria-brand)]/40">
-                                $4.80</div>
+                                $4.800</div>
                         </div>
                         <div class="p-8 relative z-20 -mt-10">
                             <h4

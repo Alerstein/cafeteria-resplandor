@@ -95,7 +95,7 @@ body.page-entered footer {
 #ls-logo-wrap {
     position: relative;
     z-index: 10;
-    width: min(72vw, 300px);
+    width: min(72vw, 400px);
     height: auto;
     display: flex;
     align-items: center;

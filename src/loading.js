@@ -182,6 +182,8 @@ function _boot() {
             bg.stop();
             screen.style.display = 'none';
             screen.style.opacity = '';
+            document.documentElement.style.overflow = 'auto';
+            document.body.style.overflow = 'auto';
             document.body.classList.add('page-entered');
             document.dispatchEvent(new CustomEvent('resplandor:loaded'));
         }, 650);

@@ -139,17 +139,10 @@ body.code-mode::before {
     opacity: 0;
     z-index: -1;
     transition: opacity 0.3s ease;
-    animation: btn-border-spin 3s linear infinite;
 }
 
 .btn-primary:hover::after {
     opacity: 0.6;
-}
-
-@keyframes btn-border-spin {
-    to {
-        transform: rotate(360deg);
-    }
 }
 
 .btn-primary:hover {
