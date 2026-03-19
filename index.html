@@ -89,11 +89,13 @@
                         class="text-sm font-light text-gray-400 hover:text-white transition-colors">Workspace</a>
                     <a href="#testimonials"
                         class="text-sm font-light text-gray-400 hover:text-white transition-colors">Comunidad</a>
-                    <!-- Code Mode Toggle -->
-                    <button id="code-mode-toggle" title="Activar Modo Code" aria-pressed="false">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                    <!-- Theme Mode Toggle -->
+                    <button id="theme-mode-toggle" title="Cambiar a Modo Claro" aria-pressed="false">
+                        <svg class="icon icon-moon w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                        </svg>
+                        <svg class="icon icon-sun w-4 h-4 absolute" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
                         </svg>
                     </button>
                     <a href="#booking"
@@ -138,6 +140,18 @@
                     class="text-lg font-medium text-gray-900 border-b border-gray-100 pb-4">Workspace</a>
                 <a href="#testimonials"
                     class="text-lg font-medium text-gray-900 border-b border-gray-100 pb-4">Comunidad</a>
+                <!-- Theme Mode Toggle Mobile -->
+                <div class="flex items-center justify-between border-b border-gray-100 pb-4">
+                    <span class="text-lg font-medium text-gray-900">Modo</span>
+                    <button id="theme-mode-toggle-mobile" title="Cambiar a Modo Claro" aria-pressed="false" class="flex items-center">
+                        <svg class="icon icon-moon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                        </svg>
+                        <svg class="icon icon-sun w-5 h-5 absolute" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                        </svg>
+                    </button>
+                </div>
                 <a href="#booking"
                     class="bg-[var(--color-cafeteria-brand)] text-center text-white px-5 py-3 rounded-xl text-base font-medium mt-4">Reserva
                     tu spot</a>

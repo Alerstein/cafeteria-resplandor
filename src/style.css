@@ -20,40 +20,58 @@
 }
 
 /* ─────────────────────────────────────────
-   NIGHT / CODE MODE
+   LIGHT MODE
 ───────────────────────────────────────── */
-body.code-mode {
-    --color-cafeteria-dark: #060A12;
-    --color-cafeteria-light: #0D1420;
-    --color-cafeteria-brand: #2563EB;
-    --color-cafeteria-accent: #EAB308;
+body.light-mode {
+    --color-cafeteria-dark: #1F2937;
+    --color-cafeteria-light: #F8FAFC;
+    --color-cafeteria-brand: #1E40AF;
+    --color-cafeteria-accent: #F59E0B;
+    background-color: var(--color-cafeteria-light);
+    color: var(--color-cafeteria-dark);
 }
 
-body.code-mode::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image:
-        linear-gradient(rgba(30, 64, 175, 0.04) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(30, 64, 175, 0.04) 1px, transparent 1px);
-    background-size: 40px 40px;
-    pointer-events: none;
-    z-index: 1;
-    animation: grid-fade-in 0.8s ease forwards;
+body.light-mode #header {
+    background-color: rgba(248, 250, 252, 0.92);
 }
 
-@keyframes grid-fade-in {
-    from {
-        opacity: 0;
-    }
-
-    to {
-        opacity: 1;
-    }
+body.light-mode #mobile-menu {
+    background-color: var(--color-cafeteria-light);
+    color: var(--color-cafeteria-dark);
 }
 
-/* Code mode toggle button */
-#code-mode-toggle {
+/* Adaptar otros elementos para light mode */
+body.light-mode .glass {
+    @apply bg-white/80 backdrop-blur-xl border border-gray-200 shadow-lg text-gray-900;
+}
+
+body.light-mode .glass-dark {
+    @apply bg-gray-50/90 backdrop-blur-xl border border-gray-200 shadow-lg text-gray-900;
+}
+
+body.light-mode .shadow-glow-blue {
+    box-shadow: 0 0 15px rgba(30, 64, 175, 0.4);
+}
+
+body.light-mode .hover-glow-blue:hover {
+    box-shadow: 0 0 28px rgba(30, 64, 175, 0.75), 0 0 60px rgba(30, 64, 175, 0.2);
+}
+
+body.light-mode .text-glow-blue {
+    text-shadow: 0 0 12px rgba(30, 64, 175, 0.8);
+}
+
+body.light-mode .btn-primary {
+    background-color: var(--color-cafeteria-brand);
+    color: white;
+}
+
+body.light-mode .btn-primary:hover {
+    box-shadow: 0 0 25px rgba(30, 64, 175, 0.6), 0 8px 30px rgba(0, 0, 0, 0.1);
+}
+
+/* Theme mode toggle button */
+#theme-mode-toggle {
     position: relative;
     display: flex;
     align-items: center;
@@ -65,21 +83,75 @@ body.code-mode::before {
     background: transparent;
     color: rgba(156, 163, 175, 0.8);
     cursor: pointer;
-    transition: color 0.25s ease, border-color 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
+    transition: all 0.3s ease;
     flex-shrink: 0;
+    overflow: hidden;
 }
 
-#code-mode-toggle:hover {
-    color: #FACC15;
-    border-color: rgba(250, 204, 21, 0.5);
-    box-shadow: 0 0 12px rgba(250, 204, 21, 0.2);
+#theme-mode-toggle:hover {
+    border-color: rgba(245, 158, 11, 0.5);
+    box-shadow: 0 0 12px rgba(245, 158, 11, 0.2);
 }
 
-#code-mode-toggle.active {
-    color: #1E40AF;
-    border-color: rgba(30, 64, 175, 0.7);
-    background: rgba(30, 64, 175, 0.1);
-    box-shadow: 0 0 18px rgba(30, 64, 175, 0.4);
+#theme-mode-toggle .icon {
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+#theme-mode-toggle .icon-sun {
+    opacity: 0;
+    transform: rotate(-90deg);
+}
+
+#theme-mode-toggle.light .icon-moon {
+    opacity: 0;
+    transform: rotate(90deg);
+}
+
+#theme-mode-toggle.light .icon-sun {
+    opacity: 1;
+    transform: rotate(0deg);
+}
+
+/* Theme mode toggle button mobile */
+#theme-mode-toggle-mobile {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    border: 1px solid rgba(59, 130, 246, 0.25);
+    background: transparent;
+    color: rgba(156, 163, 175, 0.8);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+    overflow: hidden;
+}
+
+#theme-mode-toggle-mobile:hover {
+    border-color: rgba(245, 158, 11, 0.5);
+    box-shadow: 0 0 12px rgba(245, 158, 11, 0.2);
+}
+
+#theme-mode-toggle-mobile .icon {
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+#theme-mode-toggle-mobile .icon-sun {
+    opacity: 0;
+    transform: rotate(-90deg);
+}
+
+#theme-mode-toggle-mobile.light .icon-moon {
+    opacity: 0;
+    transform: rotate(90deg);
+}
+
+#theme-mode-toggle-mobile.light .icon-sun {
+    opacity: 1;
+    transform: rotate(0deg);
 }
 
 /* ─────────────────────────────────────────
@@ -260,4 +332,41 @@ body.code-mode::before {
 #hero-bg-layer {
     transform-origin: center center;
     will-change: transform;
+}
+
+/* Light mode overrides for specific elements */
+body.light-mode #header span {
+    color: var(--color-cafeteria-dark) !important;
+}
+
+body.light-mode nav a {
+    color: rgba(107, 114, 128, 0.8);
+}
+
+body.light-mode nav a:hover {
+    color: var(--color-cafeteria-dark);
+}
+
+body.light-mode #hero h1 {
+    color: var(--color-cafeteria-dark);
+}
+
+body.light-mode #hero p {
+    color: rgba(107, 114, 128, 0.9);
+}
+
+body.light-mode #hero .text-gray-200 {
+    color: rgba(107, 114, 128, 0.9);
+}
+
+body.light-mode #hero .text-gray-300 {
+    color: rgba(156, 163, 175, 0.9);
+}
+
+body.light-mode .text-gray-400 {
+    color: rgba(107, 114, 128, 0.8);
+}
+
+body.light-mode .hover\:text-white:hover {
+    color: var(--color-cafeteria-dark);
 }

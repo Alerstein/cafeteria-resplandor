@@ -22,18 +22,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ── 4. Sticky Header ──
-    const header = document.getElementById('header');
-    if (header) {
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 20) {
-                header.classList.add('bg-[rgba(6,10,18,0.92)]', 'backdrop-blur-md', 'shadow-md', 'py-2');
-                header.classList.remove('bg-transparent', 'py-4');
-            } else {
-                header.classList.remove('bg-[rgba(6,10,18,0.92)]', 'backdrop-blur-md', 'shadow-md', 'py-2');
-                header.classList.add('bg-transparent', 'py-4');
-            }
-        }, { passive: true });
-    }
+    window.addEventListener('scroll', syncHeaderTheme, { passive: true });
+    syncHeaderTheme();
 
     // ── 5. Scroll Reveal ──
     const revealElements = document.querySelectorAll('.reveal-hidden');
@@ -56,8 +46,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // ── 6. Hero Parallax ──
     initParallax();
 
-    // ── 7. Code/Night Mode Toggle ──
-    initCodeModeToggle();
+    // ── 7. Theme Mode Toggle ──
+    initThemeModeToggle();
 });
 
 /* ─────────────────────────────────────
@@ -87,25 +77,66 @@ function initParallax() {
     }, { passive: true });
 }
 
-/* ─────────────────────────────────────
-   CODE / NIGHT MODE TOGGLE
-───────────────────────────────────── */
-function initCodeModeToggle() {
-    const toggle = document.getElementById('code-mode-toggle');
-    if (!toggle) return;
+function syncHeaderTheme() {
+    const header = document.getElementById('header');
+    if (!header) return;
 
-    // Restore preference
-    const saved = localStorage.getItem('resplandor_code_mode');
-    if (saved === '1') {
-        document.body.classList.add('code-mode');
-        toggle.classList.add('active');
-        toggle.setAttribute('aria-pressed', 'true');
+    const isLight = document.body.classList.contains('light-mode');
+    const scrolled = window.scrollY > 20;
+    const lightBg = 'bg-[rgba(248,250,252,0.92)]';
+    const darkBg = 'bg-[rgba(6,10,18,0.92)]';
+
+    // Always remove previous theme background before applying
+    header.classList.remove(lightBg, darkBg);
+
+    if (scrolled) {
+        header.classList.add(isLight ? lightBg : darkBg, 'backdrop-blur-md', 'shadow-md', 'py-2');
+        header.classList.remove('bg-transparent', 'py-4');
+    } else {
+        header.classList.remove('backdrop-blur-md', 'shadow-md', 'py-2', lightBg, darkBg);
+        header.classList.add('bg-transparent', 'py-4');
+    }
+}
+
+/* ─────────────────────────────────────
+   THEME MODE TOGGLE (DARK/LIGHT)
+───────────────────────────────────── */
+function initThemeModeToggle() {
+    const toggleDesktop = document.getElementById('theme-mode-toggle');
+    const toggleMobile = document.getElementById('theme-mode-toggle-mobile');
+
+    // Restore preference (default dark)
+    const saved = localStorage.getItem('resplandor_theme_mode');
+    if (saved === 'light') {
+        document.body.classList.add('light-mode');
+        if (toggleDesktop) {
+            toggleDesktop.classList.add('light');
+            toggleDesktop.setAttribute('aria-pressed', 'true');
+            toggleDesktop.setAttribute('title', 'Cambiar a Modo Oscuro');
+        }
+        if (toggleMobile) {
+            toggleMobile.classList.add('light');
+            toggleMobile.setAttribute('aria-pressed', 'true');
+        }
     }
 
-    toggle.addEventListener('click', () => {
-        const isActive = document.body.classList.toggle('code-mode');
-        toggle.classList.toggle('active', isActive);
-        toggle.setAttribute('aria-pressed', String(isActive));
-        localStorage.setItem('resplandor_code_mode', isActive ? '1' : '0');
-    });
+    // Ensure header matches the restored mode
+    syncHeaderTheme();
+
+    // Function to handle toggle
+    const handleToggle = (toggle) => {
+        const isLight = document.body.classList.toggle('light-mode');
+        toggle.classList.toggle('light', isLight);
+        toggle.setAttribute('aria-pressed', String(isLight));
+        toggle.setAttribute('title', isLight ? 'Cambiar a Modo Oscuro' : 'Cambiar a Modo Claro');
+        localStorage.setItem('resplandor_theme_mode', isLight ? 'light' : 'dark');
+        syncHeaderTheme();
+    };
+
+    if (toggleDesktop) {
+        toggleDesktop.addEventListener('click', () => handleToggle(toggleDesktop));
+    }
+    if (toggleMobile) {
+        toggleMobile.addEventListener('click', () => handleToggle(toggleMobile));
+    }
 }
